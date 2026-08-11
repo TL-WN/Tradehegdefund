@@ -55,12 +55,23 @@ def main():
     print("[ci] generating offline news brief...")
     news.offline_brief(prices=prices, fng_value=fng_val)
 
-    # --- mark book to market ---
+    # --- mark book to market (no force-flatten; let demo desk / personas manage exits) ---
     print("[ci] marking book to market...")
     b = book.load()
-    price_map = {s: (prices.get(s, {}) or {}).get("price") for s in ("BTC", "ETH", "BNB", "SOL", "XRP")}
-    res = book.mark_to_market(b, price_map)
-    book.save(res[0])
+    price_map = {"crypto": {s: {"price": (prices.get(s, {}) or {}).get("price")} for s in ("BTC", "ETH", "BNB", "SOL", "XRP")}}
+    b, dd, halt_note = book.mark_to_market(snap=price_map)
+    book.save(b)
+    if halt_note:
+        print("[ci] book note:", halt_note)
+
+    # --- demo paper desk (opens/closes clearly-labeled paper positions so the
+    #     chart's equity curve + position overlay stay alive 24/7 on the cloud) ---
+    print("[ci] running demo paper desk...")
+    try:
+        import demo_desk
+        demo_desk.run_once()
+    except Exception as e:
+        print("[ci] demo desk skipped:", e)
 
     # --- rule-based CIO call (automated, not persona) ---
     print("[ci] synthesizing automated CIO call...")

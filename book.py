@@ -167,8 +167,11 @@ def deploy(decision, snap=None):
         px = price_for(instr, snap)
         notional = b["equity"] * (margin_pct / 100.0) * lev
         b["open_position"] = {
-            "instrument": instr, "side": side, "margin_pct": margin_pct, "leverage": lev,
-            "notional": notional, "entry": px, "opened": datetime.date.today().isoformat(),
+            "instrument": instr, "symbol": instr.upper(), "side": side, "margin_pct": margin_pct, "leverage": lev,
+            "notional": notional, "entry": px,
+            "qty": (notional / px) if px else 0.0,
+            "stop": d.get("STOP"), "target": d.get("TARGET"),
+            "opened": datetime.date.today().isoformat(),
         }
         b["max_leverage_used"] = max(b["max_leverage_used"], lev)
         note = (f"Opened paper {side} {instr} @ {px} | margin {margin_pct}% x{lev} "
@@ -233,6 +236,25 @@ def mark_to_market(snap=None, flatten=False):
     _update_peak(b, snap)
     save(b)
     return b, dd, halt_note
+
+
+def close_position(reason="demo close", snap=None):
+    """Public helper: realize the open paper position (books pnl + appends a trade).
+    Respects an active drawdown halt (won't open, and will not clear a halt)."""
+    b = load()
+    _rollover_month(b)
+    _maybe_resume(b)
+    snap = snap or {}
+    if b["halted"]:
+        save(b)
+        return b, "BOOK HALTED — position not closed until cooldown clears."
+    if not b["open_position"]:
+        save(b)
+        return b, "No open position to close."
+    b = _realize(b, snap, reason=reason)
+    _update_peak(b, snap)
+    save(b)
+    return b, f"Closed paper position ({reason})."
 
 
 def mtd_progress(b=None, account_value_override=None):
