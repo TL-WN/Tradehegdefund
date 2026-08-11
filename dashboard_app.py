@@ -167,6 +167,76 @@ def latest_meeting(kind):
     return _load_json(os.path.join("meeting_logs", cands[-1]))
 
 
+def build_series(sym="BTC"):
+    """Build a TradingView-style candle series for the chart from history.json closes,
+    the live price, and the paper book's open position levels (entry/stop/target).
+    Candles are synthesized from the daily close series (no real OHLC available):
+    open = prev close, close = day close, high/low = close +/- a deterministic wick
+    derived from the day index so the chart looks like real candles but is our own data."""
+    import math
+    hist = _load_json("history.json", {})
+    node = (hist.get(sym) or hist.get(sym.lower()) or {})
+    series = node.get("series", []) if isinstance(node, dict) else []
+    prices, _ = refresh_prices()
+    live = (prices.get(sym) or {}).get("price")
+
+    candles = []
+    prev = None
+    for i, pt in enumerate(series):
+        c = pt.get("c")
+        if c is None:
+            continue
+        o = prev if prev is not None else c
+        # deterministic synthetic wick so candles vary like real ones
+        seed = (math.sin(i * 12.9898) * 43758.5453) % 1
+        wick = abs(c) * 0.012
+        hi = max(o, c) + wick * seed
+        lo = min(o, c) - wick * (1 - seed)
+        candles.append({"t": pt.get("t"), "o": round(o, 2), "h": round(hi, 2),
+                        "l": round(lo, 2), "c": round(c, 2)})
+        prev = c
+    # live tail candle (today, updating)
+    if live is not None:
+        o = prev if prev is not None else live
+        candles.append({"t": "live", "o": round(o, 2), "h": round(max(o, live), 2),
+                        "l": round(min(o, live), 2), "c": round(live, 2), "live": True})
+
+    # paper position levels for overlay
+    book = {}
+    try:
+        from book import load as _bl
+        book = _bl() or {}
+    except Exception:
+        book = _load_json("paper_book.json", {})
+    op = book.get("open_position") or {}
+    # match position symbol (BTC/ETH) to chart symbol
+    pos_sym = (op.get("symbol") or "").upper()
+    levels = None
+    if op and op.get("qty") and (pos_sym == sym or not pos_sym):
+        levels = {
+            "side": op.get("side"),
+            "entry": op.get("entry"),
+            "stop": op.get("stop"),
+            "target": op.get("target"),
+            "lev": op.get("leverage"),
+        }
+
+    # equity curve (paper book trades -> cumulative equity)
+    eq_curve = []
+    try:
+        eq = book.get("equity") or 1000000
+        eq_curve = [{"t": "now", "v": eq}]
+        for t in (book.get("trades") or [])[::-1][:30]:
+            eq -= (t.get("realized_pnl") or 0)
+            eq_curve.append({"t": (t.get("ts") or "")[:10], "v": round(eq, 0)})
+        eq_curve = eq_curve[::-1]
+    except Exception:
+        pass
+
+    return {"sym": sym, "candles": candles[-160:], "live": live, "levels": levels,
+            "equity_curve": eq_curve, "chg24h": (prices.get(sym) or {}).get("chg24h")}
+
+
 def build_state():
     prices, fng = refresh_prices()
     try:
@@ -284,6 +354,12 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/history":
             h = _load_json("history.json", {})
             self._send(200, json.dumps(h))
+        elif path == "/api/series":
+            raw = self.path
+            sym = "BTC"
+            if "sym=" in raw:
+                sym = raw.split("sym=")[1].split("&")[0].upper() or "BTC"
+            self._send(200, json.dumps(build_series(sym)))
         else:
             self._send(404, json.dumps({"error": "not found"}))
 

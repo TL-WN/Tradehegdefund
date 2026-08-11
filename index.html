@@ -85,6 +85,19 @@
     <div class="live"><span class="dot"></span><span id="clock">--:--:--</span> · LIVE</div>
   </header>
 
+  <!-- LIVE CHART (TradingView-style, our own data) -->
+  <div class="panel" style="margin-bottom:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <h2 style="margin:0;border:none;padding:0">Live Chart — Desk View</h2>
+      <div class="tabs" id="symtabs" style="margin:0">
+        <button data-sym="BTC" class="active">BTC/USD</button>
+        <button data-sym="ETH">ETH/USD</button>
+      </div>
+    </div>
+    <canvas id="chart" height="300" style="width:100%;display:block;background:#0a0e17;border-radius:6px"></canvas>
+    <div id="chartmeta" class="mut" style="font-size:10px;margin-top:4px"></div>
+  </div>
+
   <div class="grid">
     <!-- LIVE PRICES -->
     <div class="panel col-4">
@@ -274,6 +287,84 @@ function renderWeekly(w){
   $("#weekly").innerHTML = h;
 }
 
+let curSym = "BTC";
+let liveTail = [];  // rolling live-price points for the animated tail
+
+function renderChart(){
+  const cv = $("#chart");
+  const dpr = window.devicePixelRatio || 1;
+  const W = cv.clientWidth, H = 300;
+  cv.width = W * dpr; cv.height = H * dpr;
+  const ctx = cv.getContext("2d"); ctx.scale(dpr, dpr);
+  ctx.clearRect(0,0,W,H);
+
+  fetch("/api/series?sym=" + curSym).then(r=>r.json()).then(s=>{
+    const candles = s.candles || [];
+    if(!candles.length){ return; }
+    // animate live tail: keep appending the live price
+    if(s.live!=null){ liveTail.push(s.live); if(liveTail.length>40) liveTail.shift(); }
+
+    // price range from candles + levels
+    let lo=1e18, hi=-1e18;
+    for(const c of candles){ lo=Math.min(lo,c.l); hi=Math.max(hi,c.h); }
+    const lv = s.levels||{};
+    for(const v of [lv.entry,lv.stop,lv.target]){ if(v){ lo=Math.min(lo,v); hi=Math.max(hi,v); } }
+    if(s.live!=null){ lo=Math.min(lo,s.live); hi=Math.max(hi,s.live); }
+    const pad=(hi-lo)*0.08||1; lo-=pad; hi+=pad;
+
+    const padL=8, padR=58, padT=10, padB=18;
+    const plotW=W-padL-padR, plotH=H-padT-padB;
+    const x=i=> padL + (i+0.5)*(plotW/candles.length);
+    const y=p=> padT + (hi-p)/(hi-lo)*plotH;
+
+    // grid + price axis
+    ctx.strokeStyle="#16202e"; ctx.fillStyle="#5b6677"; ctx.font="10px monospace"; ctx.lineWidth=1;
+    for(let g=0;g<=4;g++){ const p=lo+(hi-lo)*g/4; const yy=y(p);
+      ctx.beginPath(); ctx.moveTo(padL,yy); ctx.lineTo(W-padR,yy); ctx.stroke();
+      ctx.fillText(fmt(p, p>1000?0:2), W-padR+4, yy+3);
+    }
+
+    // candles
+    const bw=Math.max(2, plotW/candles.length*0.6);
+    candles.forEach((c,i)=>{
+      const up = c.c>=c.o;
+      ctx.strokeStyle = up?"#19c37d":"#ff4d4f";
+      ctx.fillStyle = up?"#19c37d":"#ff4d4f";
+      // wick
+      ctx.beginPath(); ctx.moveTo(x(i), y(c.h)); ctx.lineTo(x(i), y(c.l)); ctx.stroke();
+      // body
+      const yo=y(c.o), yc=y(c.c); const top=Math.min(yo,yc); const bh=Math.max(1,Math.abs(yc-yo));
+      if(c.live){ ctx.globalAlpha=0.95; }
+      ctx.fillRect(x(i)-bw/2, top, bw, bh); ctx.globalAlpha=1;
+    });
+
+    // live tail line (animated)
+    if(liveTail.length>1){
+      ctx.strokeStyle="#5ed0ff"; ctx.lineWidth=1.5; ctx.beginPath();
+      liveTail.forEach((v,i)=>{ const xx=padL+plotW*(i/(liveTail.length-1)); const yy=y(v);
+        i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy); }); ctx.stroke();
+    }
+
+    // position levels overlay
+    const lvlDefs=[["entry","#5ed0ff","ENTRY"],["target","#19c37d","TARGET"],["stop","#ff4d4f","STOP"]];
+    for(const [k,col,lab] of lvlDefs){ const v=lv[k]; if(v==null) continue;
+      const yy=y(v); ctx.strokeStyle=col; ctx.setLineDash([4,3]); ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(padL,yy); ctx.lineTo(W-padR,yy); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle=col; ctx.fillText(lab+" "+fmt(v, v>1000?0:2), padL+4, yy-3);
+    }
+
+    // current price marker
+    if(s.live!=null){ const yy=y(s.live);
+      ctx.fillStyle="#5ed0ff"; ctx.beginPath(); ctx.arc(W-padR-2, yy, 3, 0, 7); ctx.fill();
+      ctx.fillStyle="#5ed0ff"; ctx.fillText(fmt(s.live, s.live>1000?0:2), W-padR+4, yy+3);
+    }
+
+    $("#chartmeta").textContent =
+      `${curSym}/USD · last ${fmt(s.live, s.live>1000?0:2)} · 24h ${sign(s.chg24h||0)}${fmt(s.chg24h||0)}%` +
+      (lv.entry!=null? `  |  position: ${lv.side?.toUpperCase()} @ ${fmt(lv.entry)} (${lv.lev||1}x)` : "  |  no open position");
+  }).catch(()=>{});
+}
+
 async function tick(){
   try{
     const r = await fetch("/api/state");
@@ -285,12 +376,22 @@ async function tick(){
     renderResearch(d.research);
     renderNews(d.news);
     renderWeekly(d.news.week);
+    renderChart();
     $("#clock").textContent = new Date().toLocaleTimeString();
   }catch(e){ $("#prices").innerHTML='<div class="mut">connecting…</div>'; }
 }
 
 tick();
 setInterval(tick, 5000);
+// symbol switcher
+document.querySelectorAll("#symtabs button").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("#symtabs button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active"); curSym=b.dataset.sym; liveTail=[]; renderChart();
+  };
+});
+// animate the live tail a bit faster than the 5s state poll
+setInterval(()=>{ if(document.visibilityState==="visible") renderChart(); }, 3000);
 </script>
 </body>
 </html>
