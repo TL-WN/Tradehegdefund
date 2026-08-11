@@ -49,8 +49,7 @@ def _get(url, timeout=8):
 
 
 def _binance_prices():
-    """Fallback live prices from Binance public API (no key). Returns dict per symbol
-    with price + 24h change (via 24h ticker). Best-effort; raises on failure."""
+    """Fallback live prices from Binance public API (no key). Raises on failure."""
     out = {}
     for sym, bsym in BINANCE.items():
         t = _get(f"https://api.binance.com/api/v3/ticker/24hr?symbol={bsym}")
@@ -58,10 +57,42 @@ def _binance_prices():
             "pair": sym + "/USD",
             "price": float(t.get("lastPrice", 0)),
             "chg24h": float(t.get("priceChangePercent", 0)),
-            "chg7d": None,
-            "chg30d": None,
-            "mcap": None,
-            "ath": None,
+            "chg7d": None, "chg30d": None, "mcap": None, "ath": None,
+        }
+    return out
+
+
+def _kraken_prices():
+    """Fallback via Kraken public ticker (very permissive, cloud-friendly)."""
+    pair_map = {"BTC": "XBTUSDT", "ETH": "ETHUSDT", "SOL": "SOLUSDT", "XRP": "XRPUSDT", "BNB": "BNBUSDT"}
+    out = {}
+    for sym, kp in pair_map.items():
+        t = _get(f"https://api.kraken.com/0/public/Ticker?pair={kp}")
+        res = (t.get("result") or {}).get(kp)
+        if not res:
+            continue
+        last = float(res["c"][0])
+        chg = float(res["P"][1])  # 24h pct change (quote)
+        out[sym] = {
+            "pair": sym + "/USD",
+            "price": last,
+            "chg24h": chg,
+            "chg7d": None, "chg30d": None, "mcap": None, "ath": None,
+        }
+    if not out:
+        raise RuntimeError("kraken returned no pairs")
+    return out
+
+
+def _coinbase_prices():
+    """Fallback via Coinbase spot prices (cloud-friendly)."""
+    out = {}
+    for sym in BINANCE:
+        p = _get(f"https://api.coinbase.com/v2/prices/{sym}-USD/spot")
+        out[sym] = {
+            "pair": sym + "/USD",
+            "price": float(p["data"]["amount"]),
+            "chg24h": None, "chg7d": None, "chg30d": None, "mcap": None, "ath": None,
         }
     return out
 
@@ -89,11 +120,16 @@ def refresh_prices():
                     "ath": x.get("ath"),
                 }
         except Exception:
-            # CoinGecko down/rate-limited -> fall back to Binance
-            try:
-                out = _binance_prices()
-            except Exception as e:
-                out["_error"] = str(e)
+            # CoinGecko down/rate-limited -> try fallbacks in order
+            out = {}
+            for fn in (_binance_prices, _kraken_prices, _coinbase_prices):
+                try:
+                    out = fn()
+                    break
+                except Exception:
+                    continue
+            if not out:
+                out["_error"] = "all price sources unavailable"
         try:
             fng = _get("https://api.alternative.me/fng/?limit=1")
             PRICE_CACHE["fng"] = {
