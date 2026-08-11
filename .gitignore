@@ -7,20 +7,16 @@ __pycache__/
 *.pyc
 .venv/
 
-# --- runtime / transient ---
+# --- local runtime (not deployed) ---
 public_url.txt
 tunnel.out
-*.log
-
-# --- firm data logs (regenerated at runtime; keep code, not state) ---
-meeting_logs/
-news_logs/
-research_logs/
-*.json
-!package.json
-
-# --- local chrome debug profile ---
 chrome-debug/
-
-# --- env (no secrets shipped) ---
 .env
+
+# --- runtime data: COMMITTED so the cloud dashboard stays populated ---
+# (the GitHub Action regenerates + commits these on schedule)
+# meeting_logs/, news_logs/, research_logs/ are kept in git.
+# paper_book.json, history.json, market_snapshot.json are kept in git.
+
+# --- exclude any stray local-only json not part of the deploy ---
+briefing.txt

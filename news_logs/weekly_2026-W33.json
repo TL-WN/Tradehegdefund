@@ -1,0 +1,22 @@
+{
+  "type": "WEEKLY_NEWS_DIGEST",
+  "week": "2026-W33",
+  "generated": "2026-08-11",
+  "days_covered": 1,
+  "sentiment_tally": {
+    "BEARISH": 4,
+    "BULLISH": 3,
+    "NEUTRAL": 7
+  },
+  "top_themes": [
+    "riot is dumping its bitcoin to",
+    "michael saylor dumped more bitcoin -",
+    "just in: uk lawmakers demand banks",
+    "ethereum l2 ecosystem loses momentum as",
+    "bitcoin au bottom? ce signal bullish",
+    "strategy ceo calls mstr an amplified"
+  ],
+  "raw_days": [
+    "2026-08-11"
+  ]
+}

@@ -113,6 +113,47 @@ def latest():
     return json.load(open(os.path.join(NEWS_DIR, files[-1])))
 
 
+def offline_brief(prices=None, fng_value=None):
+    """
+    Fallback used when no browser is available (CI / cloud). Builds a short,
+    data-driven market-context brief from live prices + F&G so the news panel
+    is never empty. Clearly labelled as automated (not a web scrape).
+    """
+    items = []
+    if prices:
+        for sym, d in prices.items():
+            if sym == "_error":
+                continue
+            chg = d.get("chg24h")
+            if chg is None:
+                continue
+            if chg <= -3:
+                items.append({"headline": f"{sym} down {abs(chg):.1f}% in 24h — risk-off pressure",
+                              "sentiment": "BEARISH", "raw": ""})
+            elif chg >= 3:
+                items.append({"headline": f"{sym} up {chg:.1f}% in 24h — bid momentum",
+                              "sentiment": "BULLISH", "raw": ""})
+        # sort actionable first
+        rank = {"BEARISH": 0, "BULLISH": 1, "NEUTRAL": 2}
+        items.sort(key=lambda x: rank.get(x["sentiment"], 3))
+    if fng_value is not None:
+        cls = "FEAR" if int(fng_value) < 45 else "GREED" if int(fng_value) > 55 else "NEUTRAL"
+        items.insert(0, {"headline": f"Fear & Greed at {fng_value} ({cls}) — crowd sentiment gauge",
+                         "sentiment": "BEARISH" if cls == "FEAR" else "BULLISH" if cls == "GREED" else "NEUTRAL",
+                         "raw": ""})
+    brief = {
+        "type": "NEWS_BRIEF",
+        "date": datetime.date.today().isoformat(),
+        "source": "offline-data-fallback",
+        "requested_by": "ci_engine",
+        "count": len(items),
+        "items": items[:15],
+    }
+    fn = os.path.join(NEWS_DIR, f"news_{brief['date']}.json")
+    json.dump(brief, open(fn, "w"), indent=2)
+    return brief
+
+
 def weekly_digest():
     """Aggregate this week's daily news logs into one narrative-arc digest.
     Returns a dict; also writes news_logs/weekly_<isoweek>.json + a rendered text."""

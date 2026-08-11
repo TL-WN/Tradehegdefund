@@ -1,0 +1,70 @@
+{
+  "kind": "OPENING",
+  "time": "08:00",
+  "to_boss": true,
+  "ts": "2026-08-11T08:00:00Z",
+  "briefing": "BTC $64,155 (24h -1.0%, range $63,771-$65,147, -49% ATH); ETH $1,887 (30d +4.7%); FNG 29 Extreme Fear.",
+  "speakers": [
+    {
+      "id": "macro",
+      "name": "Dr. Helena Voss",
+      "role": "Macro Strategist",
+      "view": "Liquidity regime remains deflationary near-term: Riot's forced BTC sale to fund a $9.1B AI pivot plus Saylor distribution adds supply just as L2 TVL hits a two-year low \u2014 a structural demand warning for ETH. BlackRock's bottom signal and persistent 29 Fear noted, but the regime is still risk-off."
+    },
+    {
+      "id": "quant",
+      "name": "Kenji Arai",
+      "role": "Quant / Systematic",
+      "view": "BTC 64,155, -1.0% 24h, pinned in 63,771\u201365,147 band (mid 64,459), -49% vs ATH 126,080. FNG 29 = fear. Bear flows dominate: Riot + Saylor supply = ~4\u20136k BTC overhang; ETH L2 TVL 2-yr low = structural ETH drag. Bulls: BlackRock bottom signal, Strategy bid. Range intact."
+    },
+    {
+      "id": "news",
+      "name": "Nick Reed",
+      "role": "News Reporter",
+      "view": "Three stories move the tape today. Supply overhang first: Riot selling BTC to fund its $9.1B AI deal, plus reports Saylor trimmed \u2014 real near-term pressure, though 'Saylor dumped' is partly FUD; Strategy calls itself an 'amplified Bitcoin play' and will resume buying. Second: BlackRock's bullish bottom signal + Strategy bid = genuine demand. Third: ETH L2 TVL 2-yr low is structural, slower-burn. Debanking + Kazakhstan are watch-items, not today's movers."
+    },
+    {
+      "id": "sentiment",
+      "name": "Mara Quinn",
+      "role": "Sentiment & Flow",
+      "view": "Fear 29 with Riot dumping and Saylor trimming \u2014 the crowd's already positioned for pain, not discovering it. That's the setup I fade: real distribution is happening, but the panic's priced, and BlackRock's bottom signal plus Strategy still buying tells me smart money isn't capitulating. Crowd's bearish, flows washing."
+    },
+    {
+      "id": "risk",
+      "name": "Dmitri Sokolov",
+      "role": "Head of Risk",
+      "view": "Supply overhang is the live risk: Riot's $9.1B AI pivot plus Saylor trimming could hit the tape faster than BlackRock's 'bottom signal' absorbs it. I don't trust FNG 29 \u2014 fear can deepen. Tail I'm watching: UK debanking contagion and ETH L2 TVL at a 2-yr low signal broader risk-off. Invalidation: a clean BTC close below 63,771."
+    }
+  ],
+  "cio_call": {
+    "DECISION": "LONG",
+    "INSTRUMENT": "BTC/USD perpetual, 3x",
+    "THESIS": "Range intact; FNG 29 = stale crowd fear. Supply overhang real but Saylor leg partly FUD (Reed); Riot forced sale is the genuine flow. Genuine demand from BlackRock bottom signal + Strategy bid. Range-fade the fear, not a directional bet.",
+    "ENTRY": "market (within range)",
+    "STOP": "63,771 close (hard invalidation, Sokolov)",
+    "TARGET": "65,147 range high / reclaim",
+    "SIZE": "5% of book margin",
+    "LEVERAGE": "3",
+    "CONVICTION": "3",
+    "DESK DISSENT": "Risk wanted FLAT/defensive on supply overhang; desk split \u2014 Macro/Quant neutral-defensive, Sentiment/News more constructive on stale fear + Strategy bid."
+  },
+  "cio_raw": "DECISION: LONG\nINSTRUMENT: BTC/USD perpetual, 3x\nTHESIS: Range intact; FNG 29 = stale crowd fear. Supply overhang real but Saylor leg partly FUD (Reed); Riot forced sale is the genuine flow. Genuine demand from BlackRock bottom signal + Strategy bid. Range-fade the fear, not a directional bet.\nENTRY: market (within range)\nSTOP: 63,771 close (hard invalidation, Sokolov)\nTARGET: 65,147 range high / reclaim\nSIZE: 5% of book margin\nLEVERAGE: 3\nCONVICTION: 3\nDESK DISSENT: Risk wanted FLAT/defensive on supply overhang; desk split \u2014 Macro/Quant neutral-defensive, Sentiment/News more constructive on stale fear + Strategy bid.",
+  "news_brief": "\ud83d\udcf0 NEWS REPORTER BRIEF (read before you decide)\nSources scanned: CryptoPanic + Cointelegraph (live scrape)  |  14 items\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n  \u25bc [BEAR] Riot is dumping its Bitcoin to fund a $9.1B AI deal\n  \u25bc [BEAR] Michael Saylor DUMPED MORE Bitcoin - But does it even affect the price?\n  \u25bc [BEAR] JUST IN: UK lawmakers demand banks explain crypto debanking\n  \u25bc [BEAR] Ethereum L2 ecosystem loses momentum as TVL drops to two-year low\n  \u25b2 [BULL] Bitcoin au bottom? Ce signal bullish detecte par BlackRock\n  \u25b2 [BULL] Strategy CEO Calls MSTR an Amplified Bitcoin Play, Says We will Get Back To Buying More\n  \u25b2 [BULL] Solana daily transactions hit a record 171.9 million on Aug. 10\n  \u2022 [NEUT] Kazakhstan offers crypto tax exemption to drive wealth to local exchanges\n  \u2022 [NEUT] Bitcoin Split? Is Your BTC Corporate Captured?\n  \u2022 [NEUT] Twenty One Capital takes $414 million Q2 loss as new CEO plots path\n  \u2022 [NEUT] Russia will let investors trade three major cryptocurrencies\n  \u2022 [NEUT] LINK Pops 5% After Standard Chartered Calls $200 Chainlink Price by 2030\n  \u2022 [NEUT] Grayscale Drops Cardano ETF Filing Just as ADA Clears a Key Hurdle\n  \u2022 [NEUT] 200K XRP Drained in 97 Minutes as Coreum Bridge Flaw Sparks Alarm\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nDesk: fold these into your read. A headline can flip the call.",
+  "paper_equity": 1000000.0,
+  "paper_action": "Opened paper LONG BTC/USD perpetual, 3x @ None | margin 2.0% x3 | notional $60,000 (6% gross exposure)",
+  "mtd": {
+    "month": "2026-08",
+    "equity": 1000000.0,
+    "account_value": 1000000.0,
+    "month_start_equity": 1000000.0,
+    "mtd_return_pct": 0.0,
+    "objective_pct": 1.0,
+    "progress_pct_of_target": 0.0,
+    "gap_to_target_pct": 1.0,
+    "max_leverage_used": 3,
+    "max_drawdown_mtd": 0.0,
+    "halted": false,
+    "drawdown_halts": 0
+  },
+  "paper_day_pnl": 0.0
+}

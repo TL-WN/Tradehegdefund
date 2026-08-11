@@ -1,0 +1,62 @@
+{
+  "kind": "CLOSE",
+  "time": "17:30",
+  "to_boss": true,
+  "ts": "2026-08-11T15:35:01.214684Z",
+  "briefing": "# DAILY MARKET BRIEFING  (2026-08-11T15:33:20.106499Z)\n\nFEAR & GREED INDEX: 29  -> Fear\n\n== CRYPTO (top caps) ==\nBTC   $63,779.00  24h -1.4%  7d 0.1%  30d -0.5%\nETH   $1,874.27  24h -1.5%  7d 0.6%  30d 3.5%\nBNB   $608.53  24h 1.1%  7d 3.2%  30d 4.6%\nSOL   $75.24  24h -1.8%  7d 2.1%  30d -2.7%\nXRP   $1.01  24h -3.3%  7d -7.3%  30d -9.5%\nDOGE  $0.07  24h 0.1%  7d -0.2%  30d -4.5%\nHYPE  $54.24  24h -0.7%  7d -1.8%  30d -19.0%\nTRX   $0.33  24h 1.3%  7d 1.8%  30d 1.3%\nZEC   $474.20  24h -6.4%  7d -2.1%  30d -9.7%\n\n== EQUITIES: not available in this snapshot (free source blocked) ==",
+  "speakers": [
+    {
+      "id": "macro",
+      "name": "Dr. Helena Voss",
+      "role": "Macro Strategist",
+      "view": "Day confirms the risk-off read and then some. BTC slid to $63,779 and printed an intraday low of $63,680 \u2014 it tagged the $63,771 level Risk flagged as the line that invalidates any long, and closed a whisker above it. That is not a constructive hold, it is a warning. Fear sits at 29, equities still gated, no catalyst to repair the regime. The opening FLAT call stands; if anything conviction in standing aside is higher, not lower. We stay sidelined. Note the dispersion compressing into pain: BNB +4.6% / ETH +3.5% still lead on 30d, but XRP -9.5% and HYPE -19.0% are bleeding."
+    },
+    {
+      "id": "quant",
+      "name": "Kenji Arai",
+      "role": "Quant / Systematic",
+      "view": "BTC closed $63,779, beneath yesterday's $65,147 reference and below its own 7d line. Session range $63,680-$64,414 \u2014 it tested the $63,771 invalidation intraday (low $63,680) and held by $11. No breakout, no confirmed breakdown. FNG 29 = Fear, no capitulation. 30d dispersion: BNB +4.6% and ETH +3.5% are the only real leaders; XRP -9.5%, HYPE -19.0%, ZEC -9.7% are the laggards and the laggards are accelerating. Opening call was FLAT. Updated bias: FLAT, modestly bearish. No long trigger until $65,147 reclaims; no short while $63,771 holds on a daily close."
+    },
+    {
+      "id": "sentiment",
+      "name": "Mara Quinn",
+      "role": "Sentiment & Flow Analyst",
+      "view": "I tilted cautiously long at the open on 'stale fear' \u2014 I'm walking that back. Fear at 29 didn't deepen into capitulation, but the tape got heavier, not exhausted: BTC made a fresh intraday low, ZEC -6.4% on a privacy-coin regulatory whisper, XRP and HYPE keep leaking. Rotation out of alts is accelerating, and the crowd is de-risking, not just fearful. My 'fade the fear' tell requires sellers to be exhausted; they aren't. Bias flips back to flat/defensive alongside the rest of the desk."
+    },
+    {
+      "id": "risk",
+      "name": "Dmitri Sokolov",
+      "role": "Head of Risk",
+      "view": "Sitting flat was the right call. BTC tagged the $63,771 invalidation intraday (low $63,680) \u2014 that is the exact line that, on a daily close, would have killed any long, and it closed $63,779, one bad print from tripping it. Tail risk partly realized: ZEC -6.4% on a regulatory headline, XRP -3.3%, HYPE -19.0% on 30d \u2014 correlations snapping to one as alts bleed. Overnight gap risk into a thin, equities-blocked tape is real. Stance: defensive. Invalidation reaffirmed: a daily close below $63,771 = no long."
+    }
+  ],
+  "cio_call": {
+    "DECISION": "FLAT",
+    "INSTRUMENT": "crypto basket",
+    "THESIS": "BTC closed $63,779, having tested the $63,771 risk-invalidation line intraday and held by a whisker \u2014 that is a warning, not a constructive signal; with FNG 29, ZEC -6.4% regulatory tail risk, and alts bleeding, we stand aside to preserve the +1%/month mandate rather than carry a low-edge overnight position.",
+    "ENTRY": "none",
+    "STOP": "none",
+    "TARGET": "n/a",
+    "SIZE": "flat",
+    "LEVERAGE": "1",
+    "CONVICTION": "2",
+    "DESK DISSENT": "Sentiment's earlier cautiously-long tilt is no longer supported by the heavier tape; desk is unanimous flat (Macro/Quant/Risk defensive, Sentiment walked back to flat)."
+  },
+  "cio_raw": "DECISION: FLAT\nINSTRUMENT: crypto basket\nTHESIS: BTC closed $63,779, having tested the $63,771 risk-invalidation line intraday and held by a whisker \u2014 that is a warning, not a constructive signal; with FNG 29, ZEC -6.4% regulatory tail risk, and alts bleeding, we stand aside to preserve the +1%/month mandate rather than carry a low-edge overnight position.\nENTRY: none\nSTOP: none\nTARGET: n/a\nSIZE: flat\nLEVERAGE: 1\nCONVICTION: 2\nDESK DISSENT: Sentiment's earlier cautiously-long tilt is no longer supported by the heavier tape; desk is unanimous flat (Macro/Quant/Risk defensive, Sentiment walked back to flat).",
+  "paper_day_pnl": 0.0,
+  "paper_equity": 1000000.0,
+  "mtd": {
+    "month": "2026-08",
+    "equity": 1000000.0,
+    "account_value": 1000000.0,
+    "month_start_equity": 1000000.0,
+    "mtd_return_pct": 0.0,
+    "objective_pct": 1.0,
+    "progress_pct_of_target": 0.0,
+    "gap_to_target_pct": 1.0,
+    "max_leverage_used": 0,
+    "max_drawdown_mtd": 0.0,
+    "halted": false,
+    "drawdown_halts": 0
+  }
+}

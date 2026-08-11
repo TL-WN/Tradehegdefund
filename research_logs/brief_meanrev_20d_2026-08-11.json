@@ -1,0 +1,33 @@
+{
+  "type": "RESEARCH_BRIEF",
+  "date": "2026-08-11",
+  "requested_by": "research_desk",
+  "source": "https://xerogravity.com/blog/crypto-mean-reversion-strategy :: Crypto Mean Reversion Strategy: z-score reversion to a 20-day rolling mean, with",
+  "strategy": "meanrev_20d",
+  "strategy_name": "20-day z-score mean reversion (long below -1.5\u03c3, short above +1.5\u03c3)",
+  "backtest": {
+    "BTC": {
+      "sym": "BTC",
+      "bars": 121,
+      "strat_return_pct": -11.95,
+      "buyhold_return_pct": -14.79,
+      "trades": 10,
+      "win_rate_pct": 41.9,
+      "max_drawdown_pct": 20.22,
+      "vs_buyhold_pct": 2.84,
+      "final_equity": 0.8813
+    },
+    "ETH": {
+      "sym": "ETH",
+      "bars": 121,
+      "strat_return_pct": -2.48,
+      "buyhold_return_pct": -21.81,
+      "trades": 10,
+      "win_rate_pct": 48.4,
+      "max_drawdown_pct": 20.63,
+      "vs_buyhold_pct": 19.33,
+      "final_equity": 0.9622
+    }
+  },
+  "verdict_hint": "BTC: -11.95% vs BH -14.79% (BEATS BH), win 41.9%, maxDD 20.22% | ETH: -2.48% vs BH -21.81% (BEATS BH), win 48.4%, maxDD 20.63%"
+}

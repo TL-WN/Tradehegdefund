@@ -1,0 +1,33 @@
+{
+  "type": "RESEARCH_BRIEF",
+  "date": "2026-08-11",
+  "requested_by": "boss",
+  "source": "internal catalogue",
+  "strategy": "momentum_20d",
+  "strategy_name": "20-day momentum (long when price > 20d mean, else flat/short)",
+  "backtest": {
+    "BTC": {
+      "sym": "BTC",
+      "bars": 121,
+      "strat_return_pct": 6.23,
+      "buyhold_return_pct": -14.79,
+      "trades": 13,
+      "win_rate_pct": 51.0,
+      "max_drawdown_pct": 18.15,
+      "vs_buyhold_pct": 21.02,
+      "final_equity": 1.0484
+    },
+    "ETH": {
+      "sym": "ETH",
+      "bars": 121,
+      "strat_return_pct": 10.73,
+      "buyhold_return_pct": -21.81,
+      "trades": 12,
+      "win_rate_pct": 55.0,
+      "max_drawdown_pct": 19.86,
+      "vs_buyhold_pct": 32.54,
+      "final_equity": 1.0805
+    }
+  },
+  "verdict_hint": "BTC: 6.23% vs BH -14.79% (BEATS BH), win 51.0%, maxDD 18.15% | ETH: 10.73% vs BH -21.81% (BEATS BH), win 55.0%, maxDD 19.86%"
+}

@@ -1,0 +1,30 @@
+{
+  "DECISION": "FLAT",
+  "INSTRUMENT": "crypto basket",
+  "THESIS": "BTC closed $63,779, having tested the $63,771 risk-invalidation line intraday and held by a whisker \u2014 that is a warning, not a constructive signal; with FNG 29, ZEC -6.4% regulatory tail risk, and alts bleeding, we stand aside to preserve the +1%/month mandate rather than carry a low-edge overnight position.",
+  "ENTRY": "none",
+  "STOP": "none",
+  "TARGET": "n/a",
+  "SIZE": "flat",
+  "LEVERAGE": "1",
+  "CONVICTION": "2",
+  "DESK DISSENT": "Sentiment's earlier cautiously-long tilt is no longer supported by the heavier tape; desk is unanimous flat (Macro/Quant/Risk defensive, Sentiment walked back to flat).",
+  "_execution": {
+    "executed": false,
+    "mode": "dry-run",
+    "note": "No action taken (FLAT / no instrument).",
+    "timestamp": "2026-08-11T15:35:01.215684Z",
+    "position": {
+      "DECISION": "FLAT",
+      "INSTRUMENT": "crypto basket",
+      "THESIS": "BTC closed $63,779, having tested the $63,771 risk-invalidation line intraday and held by a whisker \u2014 that is a warning, not a constructive signal; with FNG 29, ZEC -6.4% regulatory tail risk, and alts bleeding, we stand aside to preserve the +1%/month mandate rather than carry a low-edge overnight position.",
+      "ENTRY": "none",
+      "STOP": "none",
+      "TARGET": "n/a",
+      "SIZE": "flat",
+      "LEVERAGE": "1",
+      "CONVICTION": "2",
+      "DESK DISSENT": "Sentiment's earlier cautiously-long tilt is no longer supported by the heavier tape; desk is unanimous flat (Macro/Quant/Risk defensive, Sentiment walked back to flat)."
+    }
+  }
+}

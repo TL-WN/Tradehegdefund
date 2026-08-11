@@ -1,0 +1,43 @@
+name: Desk Data Refresh
+
+on:
+  schedule:
+    # UTC times. Render dashboard stays data-live 24/7.
+    # Every 3 hours + aligned to the firm's meeting windows.
+    - cron: "0 */3 * * *"          # top of every 3rd hour
+    - cron: "0 8 * * *"            # ~08:00 opening window
+    - cron: "0 13 * * *"           # ~13:00 midday
+    - cron: "30 17 * * *"          # ~17:30 close
+    - cron: "0 9 1 * *"            # monthly scorecard
+    - cron: "0 17 * * 5"           # weekly news digest (Fri)
+  workflow_dispatch:               # allow manual run
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run offline engine (prices, research, book MTM, news, automated call)
+        run: python run_ci.py
+
+      - name: Commit refreshed data
+        run: |
+          git config user.name "Hermes Desk CI"
+          git config user.email "desk@hermes.local"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "no changes to commit"
+          else
+            git commit -m "ci: refresh desk data $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          fi
