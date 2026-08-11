@@ -395,124 +395,174 @@ function renderChart(){
   }).catch(()=>{});
 }
 
-// ---- zoom + pan interactions (reworked with fetch/draw split) ----
-let chartData = null;   // last fetched series + computed view
-function chartGeom(){
-  const cv = $("#chart");
-  const W = cv.clientWidth, padL=8, padR=58;
-  return {W, plotW: W-padL-padR, padL};
-}
+// ---- zoom + pan + crosshair + touch (full rebuild) ----
+let chartData = null;
+let hoverIdx = null;
+let touchState = null;
+function chartGeom(){ const cv=$("#chart"); const W=cv.clientWidth, padL=8, padR=58; return {W, plotW:W-padL-padR, padL}; }
 function zoomAt(px, factor){
-  const win = (viewEnd==null ? 160 : viewEnd) - viewStart;
-  let ns = Math.round(win*factor);
-  ns = Math.max(8, Math.min(400, ns));
-  const g = chartGeom();
-  const frac = Math.max(0, Math.min(1, (px - g.padL) / g.plotW));
-  const anchor = viewStart + frac*win;
-  viewStart = Math.max(0, Math.round(anchor - frac*ns));
-  viewEnd = viewStart + ns;
+  const win=(viewEnd==null?200:viewEnd)-viewStart;
+  let ns=Math.round(win*factor); ns=Math.max(8,Math.min(400,ns));
+  const g=chartGeom(); const frac=Math.max(0,Math.min(1,(px-g.padL)/g.plotW));
+  const anchor=viewStart+frac*win;
+  viewStart=Math.max(0,Math.round(anchor-frac*ns)); viewEnd=viewStart+ns;
 }
 async function fetchChart(){
-  try{
-    const s = await (await fetch("/api/series?sym="+curSym)).json();
-    chartData = s;
+  try{ const s=await (await fetch("/api/series?sym="+curSym)).json(); chartData=s;
     if(s.live!=null){ liveTail.push(s.live); if(liveTail.length>80) liveTail.shift(); }
   }catch(e){}
 }
 function drawChart(){
-  const cv = $("#chart");
-  if(!cv) return;
-  const dpr = window.devicePixelRatio || 1;
-  const W = cv.clientWidth, H = 300;
-  cv.width = W*dpr; cv.height = H*dpr;
-  const ctx = cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
-  ctx.clearRect(0,0,W,H);
-  const s = chartData;
-  if(!s || !(s.candles||[]).length){ requestAnimationFrame(drawChart); return; }
+  const cv=$("#chart"); if(!cv) return;
+  const dpr=window.devicePixelRatio||1;
+  const W=cv.clientWidth, H=440; cv.width=W*dpr; cv.height=H*dpr;
+  const ctx=cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+  const s=chartData;
+  if(!s||!(s.candles||[]).length){ requestAnimationFrame(drawChart); return; }
+  const all=s.candles;
+  const end=(viewEnd==null)?all.length:Math.min(viewEnd,all.length);
+  const start=Math.max(0,viewStart);
+  const candles=all.slice(start,end);
+  if(candles.length<2){ requestAnimationFrame(drawChart); return; }
 
-  const all = s.candles;
-  const end = (viewEnd==null) ? all.length : Math.min(viewEnd, all.length);
-  const start = Math.max(0, viewStart);
-  const candles = all.slice(start, end);
-  if(candles.length < 2){ requestAnimationFrame(drawChart); return; }
+  const padL=8, padR=58, padT=10;
+  const priceH=Math.round(H*0.62), volH=Math.round(H*0.13);
+  const volTop=padT+priceH+4, eqTop=volTop+volH+4, eqH=H-padT-priceH-volH-14;
+  const plotW=W-padL-padR;
 
   let lo=1e18, hi=-1e18;
   for(const c of candles){ lo=Math.min(lo,c.l); hi=Math.max(hi,c.h); }
-  const lv = s.levels||{};
+  const lv=s.levels||{};
   for(const v of [lv.entry,lv.stop,lv.target]){ if(v){ lo=Math.min(lo,v); hi=Math.max(hi,v); } }
   if(s.live!=null){ lo=Math.min(lo,s.live); hi=Math.max(hi,s.live); }
-  const pad=(hi-lo)*0.08||1; lo-=pad; hi+=pad;
+  const ppad=(hi-lo)*0.08||1; lo-=ppad; hi+=ppad;
+  const X=i=> padL+(i+0.5)*(plotW/candles.length);
+  const Y=p=> padT+(hi-p)/(hi-lo)*priceH;
 
-  const padL=8, padR=58, padT=10, padB=18;
-  const plotW=W-padL-padR, plotH=H-padT-padB;
-  const x=i=> padL + (i+0.5)*(plotW/candles.length);
-  const y=p=> padT + (hi-p)/(hi-lo)*plotH;
+  let vmax=0; for(const c of candles) vmax=Math.max(vmax,c.v||0); vmax=vmax||1;
+  const VY=v=> volTop+volH-(v/vmax)*volH;
 
-  // grid + axis
+  const eq=s.equity_curve||[];
+  let elo=1e18,ehi=-1e18; for(const e of eq){ elo=Math.min(elo,e.v); ehi=Math.max(ehi,e.v); }
+  if(!isFinite(elo)){ elo=0; ehi=1; }
+  const epad=(ehi-elo)*0.1||1; elo-=epad; ehi+=epad;
+  const EY=v=> eqTop+(ehi-v)/(ehi-elo)*eqH;
+
+  // price grid + axis
   ctx.strokeStyle="#16202e"; ctx.fillStyle="#5b6677"; ctx.font="10px monospace"; ctx.lineWidth=1;
-  for(let g=0;g<=4;g++){ const p=lo+(hi-lo)*g/4; const yy=y(p);
+  for(let g=0;g<=4;g++){ const p=lo+(hi-lo)*g/4; const yy=Y(p);
     ctx.beginPath(); ctx.moveTo(padL,yy); ctx.lineTo(W-padR,yy); ctx.stroke();
-    ctx.fillText(fmt(p, p>1000?0:2), W-padR+4, yy+3);
+    ctx.fillText(fmt(p,p>1000?0:2), W-padR+4, yy+3);
   }
   // candles
   const bw=Math.max(2, plotW/candles.length*0.6);
   candles.forEach((c,i)=>{
-    const up = c.c>=c.o;
-    ctx.strokeStyle = up?"#19c37d":"#ff4d4f"; ctx.fillStyle = up?"#19c37d":"#ff4d4f";
-    ctx.beginPath(); ctx.moveTo(x(i), y(c.h)); ctx.lineTo(x(i), y(c.l)); ctx.stroke();
-    const yo=y(c.o), yc=y(c.c); const top=Math.min(yo,yc); const bh=Math.max(1,Math.abs(yc-yo));
-    if(c.live) ctx.globalAlpha=0.95;
-    ctx.fillRect(x(i)-bw/2, top, bw, bh); ctx.globalAlpha=1;
+    const up=c.c>=c.o; ctx.strokeStyle=up?"#19c37d":"#ff4d4f"; ctx.fillStyle=up?"#19c37d":"#ff4d4f";
+    ctx.beginPath(); ctx.moveTo(X(i),Y(c.h)); ctx.lineTo(X(i),Y(c.l)); ctx.stroke();
+    const yo=Y(c.o), yc=Y(c.c); const top=Math.min(yo,yc); const bh=Math.max(1,Math.abs(yc-yo));
+    if(c.live) ctx.globalAlpha=0.95; ctx.fillRect(X(i)-bw/2, top, bw, bh); ctx.globalAlpha=1;
   });
   // lively tail: gradient + glow + pulsing head
   if(liveTail.length>1){
-    const tx = i => padL + plotW*(i/(liveTail.length-1));
-    ctx.save();
-    ctx.shadowColor="#5ed0ff"; ctx.shadowBlur=8;
-    const grad = ctx.createLinearGradient(0,padT,0,padT+plotH);
+    const tx=i=> padL+plotW*(i/(liveTail.length-1));
+    ctx.save(); ctx.shadowColor="#5ed0ff"; ctx.shadowBlur=8;
+    const grad=ctx.createLinearGradient(0,padT,0,padT+priceH);
     grad.addColorStop(0,"rgba(94,208,255,0.95)"); grad.addColorStop(1,"rgba(94,208,255,0.35)");
-    ctx.strokeStyle=grad; ctx.lineWidth=2; ctx.lineJoin="round";
-    ctx.beginPath();
-    liveTail.forEach((v,i)=>{ const xx=tx(i), yy=y(v); i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy); });
-    ctx.stroke(); ctx.restore();
-    const hx=tx(liveTail.length-1), hy=y(liveTail[liveTail.length-1]);
-    const pulse = 3 + 2*Math.abs(Math.sin(Date.now()/280));
+    ctx.strokeStyle=grad; ctx.lineWidth=2; ctx.lineJoin="round"; ctx.beginPath();
+    liveTail.forEach((v,i)=>{ const xx=tx(i),yy=Y(v); i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy); }); ctx.stroke(); ctx.restore();
+    const hx=tx(liveTail.length-1), hy=Y(liveTail[liveTail.length-1]);
+    const pulse=3+2*Math.abs(Math.sin(Date.now()/280));
     ctx.fillStyle="rgba(94,208,255,0.22)"; ctx.beginPath(); ctx.arc(hx,hy,pulse+5,0,7); ctx.fill();
     ctx.fillStyle="#5ed0ff"; ctx.beginPath(); ctx.arc(hx,hy,pulse,0,7); ctx.fill();
   }
-  // position levels
+  // position levels overlay
   const lvlDefs=[["entry","#5ed0ff","ENTRY"],["target","#19c37d","TARGET"],["stop","#ff4d4f","STOP"]];
   for(const [k,col,lab] of lvlDefs){ const v=lv[k]; if(v==null) continue;
-    const yy=y(v); ctx.strokeStyle=col; ctx.setLineDash([4,3]); ctx.lineWidth=1;
+    const yy=Y(v); ctx.strokeStyle=col; ctx.setLineDash([4,3]); ctx.lineWidth=1;
     ctx.beginPath(); ctx.moveTo(padL,yy); ctx.lineTo(W-padR,yy); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle=col; ctx.fillText(lab+" "+fmt(v, v>1000?0:2), padL+4, yy-3);
+    ctx.fillStyle=col; ctx.fillText(lab+" "+fmt(v,v>1000?0:2), padL+4, yy-3);
   }
-  // live price tag
-  if(s.live!=null){ const yy=y(s.live);
-    ctx.fillStyle="#5ed0ff"; ctx.beginPath(); ctx.arc(W-padR-2, yy, 3, 0, 7); ctx.fill();
-    ctx.fillStyle="#5ed0ff"; ctx.fillText(fmt(s.live, s.live>1000?0:2), W-padR+4, yy+3);
+  if(s.live!=null){ const yy=Y(s.live);
+    ctx.fillStyle="#5ed0ff"; ctx.beginPath(); ctx.arc(W-padR-2,yy,3,0,7); ctx.fill();
+    ctx.fillStyle="#5ed0ff"; ctx.fillText(fmt(s.live,s.live>1000?0:2), W-padR+4, yy+3);
   }
-  const zoomed = (start>0 || end<all.length);
+  // volume pane
+  ctx.strokeStyle="#16202e"; ctx.beginPath(); ctx.moveTo(padL,volTop+volH); ctx.lineTo(W-padR,volTop+volH); ctx.stroke();
+  candles.forEach((c,i)=>{ const up=c.c>=c.o; ctx.fillStyle=up?"rgba(25,195,125,0.55)":"rgba(255,77,79,0.55)";
+    const vh=(c.v||0)/vmax*volH; ctx.fillRect(X(i)-bw/2, volTop+volH-vh, bw, vh); });
+  ctx.fillStyle="#3a4658"; ctx.font="9px monospace"; ctx.fillText("VOL", padL+2, volTop+10);
+  // equity pane
+  ctx.strokeStyle="#16202e"; ctx.beginPath(); ctx.moveTo(padL,eqTop+eqH); ctx.lineTo(W-padR,eqTop+eqH); ctx.stroke();
+  if(eq.length){
+    const startV=eq[0].v; const ys=EY(startV);
+    ctx.strokeStyle="#2a3647"; ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(padL,ys); ctx.lineTo(W-padR,ys); ctx.stroke(); ctx.setLineDash([]);
+    const ex=i=> padL+(i+0.5)*(plotW/Math.max(1,eq.length));
+    const eg=ctx.createLinearGradient(0,eqTop,0,eqTop+eqH);
+    eg.addColorStop(0,"rgba(94,208,255,0.30)"); eg.addColorStop(1,"rgba(94,208,255,0.02)");
+    ctx.beginPath(); ctx.moveTo(ex(0),EY(eq[0].v));
+    for(let i=1;i<eq.length;i++) ctx.lineTo(ex(i),EY(eq[i].v));
+    ctx.lineTo(ex(eq.length-1),eqTop+eqH); ctx.lineTo(ex(0),eqTop+eqH); ctx.closePath(); ctx.fillStyle=eg; ctx.fill();
+    ctx.strokeStyle="#5ed0ff"; ctx.lineWidth=1.5; ctx.beginPath();
+    eq.forEach((e,i)=>{ const xx=ex(i),yy=EY(e.v); i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy); }); ctx.stroke();
+    const last=eq[eq.length-1]; const ly=EY(last.v);
+    ctx.fillStyle= last.v>=startV?"#19c37d":"#ff4d4f";
+    ctx.fillText("$"+fmt(last.v,0)+" ("+(last.v>=startV?"+":"")+fmt((last.v-startV)/startV*100,2)+"%)", padL+4, eqTop+10);
+  }
+  ctx.fillStyle="#3a4658"; ctx.font="9px monospace"; ctx.fillText("PAPER EQUITY", padL+2, eqTop-2);
+  // crosshair + OHLC readout
+  if(hoverIdx!=null && hoverIdx>=0 && hoverIdx<candles.length){
+    const c=candles[hoverIdx]; const hx=X(hoverIdx);
+    ctx.strokeStyle="rgba(150,170,200,0.5)"; ctx.setLineDash([3,3]); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(hx,padT); ctx.lineTo(hx,eqTop+eqH); ctx.stroke();
+    const hy=Y(c.c); ctx.beginPath(); ctx.moveTo(padL,hy); ctx.lineTo(W-padR,hy); ctx.stroke(); ctx.setLineDash([]);
+    const ohlc=`O ${fmt(c.o,c.o>1000?0:2)}  H ${fmt(c.h,c.h>1000?0:2)}  L ${fmt(c.l,c.l>1000?0:2)}  C ${fmt(c.c,c.c>1000?0:2)}  V ${fmt(c.v,0)}`;
+    ctx.font="10px monospace"; const tw=ctx.measureText(ohlc).width+12;
+    ctx.fillStyle="rgba(10,14,23,0.9)"; ctx.fillRect(W-padR-tw, padT+2, tw, 16);
+    ctx.fillStyle="#cdd6e6"; ctx.fillText(ohlc, W-padR-tw+6, padT+14);
+  }
+  const zoomed=(start>0||end<all.length);
   ctx.fillStyle="#3a4658"; ctx.font="9px monospace";
-  ctx.fillText(zoomed?`view ${start+1}-${end}/${all.length} · scroll=zoom · drag=pan · dbl-click=reset`
-                     :`scroll=zoom · drag=pan · dbl-click=reset`, padL+4, H-5);
+  ctx.fillText(zoomed?`view ${start+1}-${end}/${all.length} · wheel/pinch zoom · drag/swipe pan · hover OHLC · dbl reset`
+                     :`wheel/pinch zoom · drag/swipe pan · hover for OHLC · dbl reset`, padL+4, H-4);
   $("#chartmeta").textContent =
-    `${curSym}/USD · last ${fmt(s.live, s.live>1000?0:2)} · 24h ${sign(s.chg24h||0)}${fmt(s.chg24h||0)}%` +
+    `${curSym}/USD · last ${fmt(s.live,s.live>1000?0:2)} · 24h ${sign(s.chg24h||0)}${fmt(s.chg24h||0)}%` +
     (lv.entry!=null? `  |  position: ${lv.side?.toUpperCase()} @ ${fmt(lv.entry)} (${lv.lev||1}x)` : "  |  no open position");
   requestAnimationFrame(drawChart);
 }
-// wheel zoom / drag pan / dbl reset
+// wheel zoom / mouse pan / dbl reset / crosshair
 $("#chart").addEventListener("wheel", e=>{ e.preventDefault(); zoomAt(e.offsetX, e.deltaY>0?1.2:0.82); }, {passive:false});
 $("#chart").addEventListener("mousedown", e=>{ dragging=true; dragX=e.offsetX; });
 window.addEventListener("mouseup", ()=> dragging=false);
 $("#chart").addEventListener("mousemove", e=>{
-  if(!dragging) return;
-  const g=chartGeom(); const dx=e.offsetX-dragX;
-  const win=(viewEnd==null?160:viewEnd)-viewStart;
-  const shift=Math.round(-dx/g.plotW*win);
-  if(shift!==0){ viewStart=Math.max(0,viewStart+shift); viewEnd=viewStart+win; dragX=e.offsetX; }
+  const g=chartGeom();
+  if(dragging){ const dx=e.offsetX-dragX; const win=(viewEnd==null?200:viewEnd)-viewStart;
+    const shift=Math.round(-dx/g.plotW*win);
+    if(shift!==0){ viewStart=Math.max(0,viewStart+shift); viewEnd=viewStart+win; dragX=e.offsetX; } return; }
+  const i=Math.floor((e.offsetX-g.padL)/(g.plotW/((viewEnd==null?200:viewEnd)-viewStart)));
+  hoverIdx=i;
 });
+$("#chart").addEventListener("mouseleave", ()=>{ hoverIdx=null; });
 $("#chart").addEventListener("dblclick", ()=>{ resetView(); });
+// touch: pinch-zoom + swipe-pan
+const cvEl=$("#chart");
+cvEl.addEventListener("touchstart", e=>{
+  if(e.touches.length===1) touchState={mode:"pan", x0:e.touches[0].clientX, vStart0:viewStart, vEnd0:viewEnd};
+  else if(e.touches.length===2){ const dx=e.touches[0].clientX-e.touches[1].clientX, dy=e.touches[0].clientY-e.touches[1].clientY;
+    touchState={mode:"zoom", dist0:Math.hypot(dx,dy), vStart0:viewStart, vEnd0:viewEnd}; }
+}, {passive:false});
+cvEl.addEventListener("touchmove", e=>{
+  e.preventDefault(); if(!touchState) return; const g=chartGeom();
+  if(touchState.mode==="pan" && e.touches.length===1){
+    const dx=e.touches[0].clientX-touchState.x0; const win=(touchState.vEnd0??200)-touchState.vStart0;
+    const shift=Math.round(-dx/g.plotW*win); viewStart=Math.max(0,touchState.vStart0+shift); viewEnd=viewStart+win;
+  } else if(touchState.mode==="zoom" && e.touches.length===2){
+    const dx=e.touches[0].clientX-e.touches[1].clientX, dy=e.touches[0].clientY-e.touches[1].clientY;
+    const dist=Math.hypot(dx,dy)||1; const factor=touchState.dist0/dist;
+    const win=(touchState.vEnd0??200)-touchState.vStart0; let ns=Math.round(win*factor);
+    ns=Math.max(8,Math.min(400,ns)); viewStart=Math.max(0,touchState.vStart0+Math.round((win-ns)/2)); viewEnd=viewStart+ns;
+  }
+}, {passive:false});
+cvEl.addEventListener("touchend", ()=>{ touchState=null; });
 
 async function tick(){
   try{

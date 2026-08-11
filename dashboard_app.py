@@ -172,7 +172,9 @@ def build_series(sym="BTC"):
     the live price, and the paper book's open position levels (entry/stop/target).
     Candles are synthesized from the daily close series (no real OHLC available):
     open = prev close, close = day close, high/low = close +/- a deterministic wick
-    derived from the day index so the chart looks like real candles but is our own data."""
+    derived from the day index so the chart looks like real candles but is our own data.
+    Volume is deterministically synthesized from the day's price move so the bars look
+    realistic (our own data, not a real exchange feed)."""
     import math
     hist = _load_json("history.json", {})
     node = (hist.get(sym) or hist.get(sym.lower()) or {})
@@ -187,19 +189,20 @@ def build_series(sym="BTC"):
         if c is None:
             continue
         o = prev if prev is not None else c
-        # deterministic synthetic wick so candles vary like real ones
         seed = (math.sin(i * 12.9898) * 43758.5453) % 1
         wick = abs(c) * 0.012
         hi = max(o, c) + wick * seed
         lo = min(o, c) - wick * (1 - seed)
+        move = abs(c - o) / (o or 1)
+        vol = round(800 + 5200 * seed + 30000 * move, 0)  # synthetic BTC-ish volume
         candles.append({"t": pt.get("t"), "o": round(o, 2), "h": round(hi, 2),
-                        "l": round(lo, 2), "c": round(c, 2)})
+                        "l": round(lo, 2), "c": round(c, 2), "v": vol})
         prev = c
     # live tail candle (today, updating)
     if live is not None:
         o = prev if prev is not None else live
         candles.append({"t": "live", "o": round(o, 2), "h": round(max(o, live), 2),
-                        "l": round(min(o, live), 2), "c": round(live, 2), "live": True})
+                        "l": round(min(o, live), 2), "c": round(live, 2), "v": 1200, "live": True})
 
     # paper position levels for overlay
     book = {}
@@ -209,7 +212,6 @@ def build_series(sym="BTC"):
     except Exception:
         book = _load_json("paper_book.json", {})
     op = book.get("open_position") or {}
-    # match position symbol (BTC/ETH) to chart symbol
     pos_sym = (op.get("symbol") or "").upper()
     levels = None
     if op and op.get("qty") and (pos_sym == sym or not pos_sym):
@@ -221,19 +223,24 @@ def build_series(sym="BTC"):
             "lev": op.get("leverage"),
         }
 
-    # equity curve (paper book trades -> cumulative equity)
+    # equity curve (paper book: start -> each closed trade pnl -> current equity)
     eq_curve = []
     try:
-        eq = book.get("equity") or 1000000
-        eq_curve = [{"t": "now", "v": eq}]
-        for t in (book.get("trades") or [])[::-1][:30]:
-            eq -= (t.get("realized_pnl") or 0)
-            eq_curve.append({"t": (t.get("ts") or "")[:10], "v": round(eq, 0)})
-        eq_curve = eq_curve[::-1]
+        start = book.get("starting_equity") or 1000000
+        eq_curve = [{"t": "start", "v": start, "peak": start}]
+        eq = start
+        peak = start
+        for t in (book.get("trades") or []):
+            eq += (t.get("realized_pnl") or 0)
+            peak = max(peak, eq)
+            eq_curve.append({"t": (t.get("ts") or "")[:10], "v": round(eq, 0), "peak": round(peak, 0)})
+        cur = book.get("equity") or eq
+        peak = max(peak, cur)
+        eq_curve.append({"t": "now", "v": round(cur, 0), "peak": round(peak, 0)})
     except Exception:
         pass
 
-    return {"sym": sym, "candles": candles[-160:], "live": live, "levels": levels,
+    return {"sym": sym, "candles": candles[-200:], "live": live, "levels": levels,
             "equity_curve": eq_curve, "chg24h": (prices.get(sym) or {}).get("chg24h")}
 
 
