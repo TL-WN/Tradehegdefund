@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HERMES CAPITAL — AI Hedge Desk</title>
+<style>
+  :root{
+    --bg:#0a0e17; --panel:#111827; --panel2:#0f1623; --line:#1e2a3a;
+    --txt:#d7e0ee; --muted:#7e8aa0; --green:#19c37d; --red:#ff4d4f; --amber:#f5a523;
+    --blue:#3b82f6; --purple:#a78bfa; --accent:#5ed0ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+  a{color:var(--blue);text-decoration:none}
+  .wrap{max-width:1500px;margin:0 auto;padding:14px}
+  header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:14px}
+  .brand{display:flex;align-items:baseline;gap:10px}
+  .brand h1{font-size:18px;margin:0;letter-spacing:2px;color:#fff}
+  .brand .sub{color:var(--muted);font-size:11px}
+  .live{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:11px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}
+  .panel h2{margin:0 0 10px;font-size:12px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:6px}
+  .col-3{grid-column:span 3}.col-4{grid-column:span 4}.col-5{grid-column:span 5}
+  .col-6{grid-column:span 6}.col-7{grid-column:span 7}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
+  .ticker{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+  .ticker:last-child{border-bottom:none}
+  .pair{font-weight:600;color:#fff}
+  .price{font-variant-numeric:tabular-nums}
+  .up{color:var(--green)}.down{color:var(--red)}.mut{color:var(--muted)}
+  .pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+  .pill.bull{background:rgba(25,195,125,.15);color:var(--green)}
+  .pill.bear{background:rgba(255,77,79,.15);color:var(--red)}
+  .pill.flat{background:rgba(126,138,160,.15);color:var(--muted)}
+  .fng{display:flex;align-items:center;gap:14px}
+  .fng .big{font-size:30px;font-weight:700}
+  .metric{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line)}
+  .metric:last-child{border-bottom:none}
+  .metric .v{font-variant-numeric:tabular-nums;color:#fff}
+  .pos{font-size:11px;padding:4px 0;border-bottom:1px dashed var(--line)}
+  .pos .h{display:flex;justify-content:space-between}
+  .badge{font-size:10px;padding:1px 6px;border-radius:4px;background:var(--panel2);color:var(--muted)}
+  .view{font-size:11px;line-height:1.5;color:var(--txt);max-height:240px;overflow:auto;white-space:pre-wrap}
+  .view .who{color:var(--purple);font-weight:700}
+  .tabs{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+  .tabs button{background:var(--panel2);color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:5px 10px;cursor:pointer;font-family:inherit;font-size:11px}
+  .tabs button.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+  .src{font-size:10px;color:var(--muted);margin-top:6px}
+  .news{font-size:11px;padding:4px 0;border-bottom:1px dashed var(--line)}
+  .news .s{font-weight:700;margin-right:5px}
+  .flash-up{animation:fu .6s} .flash-down{animation:fd .6s}
+  @keyframes fu{0%{background:rgba(25,195,125,.25)}100%{background:transparent}}
+  @keyframes fd{0%{background:rgba(255,77,79,.25)}100%{background:transparent}}
+  .foot{color:var(--muted);font-size:10px;text-align:center;margin-top:16px;line-height:1.6}
+  .halt{color:var(--amber);font-weight:700}
+  /* responsive: phones */
+  @media (max-width: 900px){
+    .grid{grid-template-columns:repeat(1,1fr)}
+    .col-3,.col-4,.col-5,.col-6,.col-7,.col-8,.col-12{grid-column:span 1}
+    .wrap{padding:8px}
+    body{font-size:12px}
+    .brand h1{font-size:15px}
+    .ticker .price{font-size:12px}
+    .fng .big{font-size:24px}
+    .view{max-height:200px}
+  }
+  @media (min-width: 901px) and (max-width: 1200px){
+    .col-3,.col-4{grid-column:span 6}
+    .col-5,.col-7{grid-column:span 12}
+    .col-6{grid-column:span 12}
+    .col-8{grid-column:span 12}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1>HERMES CAPITAL</h1>
+      <span class="sub">AI Hedge Desk · paper book · dry-run simulation</span>
+    </div>
+    <div class="live"><span class="dot"></span><span id="clock">--:--:--</span> · LIVE</div>
+  </header>
+
+  <div class="grid">
+    <!-- LIVE PRICES -->
+    <div class="panel col-4">
+      <h2>Live Markets</h2>
+      <div id="prices"></div>
+      <div class="fng" style="margin-top:10px">
+        <div>
+          <div class="mut" style="font-size:10px">FEAR &amp; GREED</div>
+          <div class="big" id="fngv">--</div>
+        </div>
+        <div class="mut" id="fngc" style="font-size:11px"></div>
+      </div>
+    </div>
+
+    <!-- PAPER BOOK -->
+    <div class="panel col-4">
+      <h2>Paper Book &amp; Mandate (+1%/mo)</h2>
+      <div id="book"></div>
+      <div id="openpos" style="margin-top:8px"></div>
+    </div>
+
+    <!-- POSITIONS HISTORY -->
+    <div class="panel col-4">
+      <h2>Positions History</h2>
+      <div id="history" style="max-height:300px;overflow:auto"></div>
+    </div>
+
+    <!-- DESK ANALYSIS -->
+    <div class="panel col-7">
+      <h2>Desk Analysis &amp; CIO Decision</h2>
+      <div class="tabs" id="mtabs"></div>
+      <div id="meeting"></div>
+    </div>
+
+    <!-- RESEARCH -->
+    <div class="panel col-5">
+      <h2>Research Desk (backtested)</h2>
+      <div id="research"></div>
+    </div>
+
+    <!-- NEWS -->
+    <div class="panel col-7">
+      <h2>News Reporter — Daily BTC Flow</h2>
+      <div id="news"></div>
+    </div>
+
+    <!-- WEEKLY DIGEST -->
+    <div class="panel col-5">
+      <h2>Weekly Narrative Arc</h2>
+      <div id="weekly"></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    HERMES CAPITAL is a <b>simulation</b>. Fictional AI personas, paper equity only, dry-run by default — not financial advice, not an autonomous trading machine.<br/>
+    Data: live CoinGecko + Alternative.me · Refresh: auto every 5s.
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const fmt = (n,d=2) => n==null?"—":Number(n).toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
+const money = n => n==null?"—":"$"+Number(n).toLocaleString("en-US",{maximumFractionDigits:0});
+const cls = n => n>0?"up":n<0?"down":"mut";
+const sign = n => n>0?"+":"";
+
+let prevPrices = {};
+
+function renderPrices(p, fng){
+  const el = $("#prices");
+  if(!p || Object.keys(p).length===0){ el.innerHTML = '<div class="mut">loading…</div>'; return; }
+  let h = "";
+  for(const [sym,d] of Object.entries(p)){
+    if(sym==="_error") continue;
+    const c = d.chg24h||0;
+    const flash = prevPrices[sym]!=null && d.price!=prevPrices[sym]
+      ? (d.price>prevPrices[sym]?"flash-up":"flash-down") : "";
+    h += `<div class="ticker ${flash}">
+      <span class="pair">${d.pair}</span>
+      <span style="flex:1;text-align:right" class="price ${cls(c)}">${fmt(d.price)}</span>
+      <span class="price ${cls(c)}" style="width:64px;text-align:right">${sign(c)}${fmt(c)}%</span>
+    </div>`;
+  }
+  el.innerHTML = h;
+  prevPrices = {}; for(const [s,d] of Object.entries(p)) prevPrices[s]=d.price;
+  if(fng && fng.value){
+    $("#fngv").textContent = fng.value;
+    $("#fngc").textContent = fng.value_classification;
+    $("#fngv").className = "big " + (fng.value<45?"down":fng.value>55?"up":"mut");
+  }
+}
+
+function renderBook(b){
+  if(!b || b.equity==null){ $("#book").innerHTML='<div class="mut">no book</div>'; return; }
+  const eq=b.equity, peak=b.peak_equity||eq;
+  const mtd = b.realized_mtd||0;
+  const dd = b.max_drawdown_mtd||0;
+  $("#book").innerHTML = `
+    <div class="metric"><span class="mut">Equity</span><span class="v">${money(eq)}</span></div>
+    <div class="metric"><span class="mut">MTD P&amp;L</span><span class="v ${cls(mtd)}">${sign(mtd)}${fmt(mtd)}</span></div>
+    <div class="metric"><span class="mut">Progress to +1%</span><span class="v">${fmt(mtd)}% / +1.0%</span></div>
+    <div class="metric"><span class="mut">Max lev used</span><span class="v">${b.max_leverage_used||0}:1 <span class="mut">(cap 100:1)</span></span></div>
+    <div class="metric"><span class="mut">Max DD MTD</span><span class="v ${cls(-dd)}">${fmt(dd)}% <span class="mut">(halt -7%)</span></span></div>
+    ${b.halted?'<div class="metric halt"><span>⚠ BOOK HALTED</span><span>auto-resume 48h</span></div>':''}
+  `;
+  const op = b.open_position;
+  if(op && op.qty){
+    $("#openpos").innerHTML = `<div class="badge">OPEN ${op.side.toUpperCase()} ${fmt(op.qty)} @ ${fmt(op.entry)} · ${op.leverage||1}x · ${cls(op.pnl)}${sign(op.pnl)}${fmt(op.pnl)}</div>`;
+  } else {
+    $("#openpos").innerHTML = `<div class="badge">NO OPEN POSITION</div>`;
+  }
+}
+
+function renderHistory(trades){
+  if(!trades || !trades.length){ $("#history").innerHTML='<div class="mut">no trades yet</div>'; return; }
+  let h="";
+  for(const t of trades.slice().reverse()){
+    const pnl = t.realized_pnl||0;
+    h += `<div class="pos"><div class="h">
+      <span>${t.side.toUpperCase()} ${t.sym} · ${t.leverage||1}x</span>
+      <span class="${cls(pnl)}">${sign(pnl)}${fmt(pnl)}</span>
+    </div><div class="mut" style="display:flex;justify-content:space-between">
+      <span>entry ${fmt(t.entry)} → exit ${fmt(t.exit)}</span>
+      <span>${t.ts?t.ts.slice(0,10):""}</span></div></div>`;
+  }
+  $("#history").innerHTML = h;
+}
+
+let mtabs = [];
+function renderMeetingTabs(m){
+  mtabs = [];
+  const defs = [["opening","OPENING"],["midday","MIDDAY"],["closing","CLOSE"]];
+  for(const [k,label] of defs){ if(m[k]) mtabs.push({k,label}); }
+  if(!mtabs.length){ $("#meeting").innerHTML='<div class="mut">no meetings logged yet</div>'; $("#mtabs").innerHTML=""; return; }
+  $("#mtabs").innerHTML = mtabs.map((t,i)=>`<button class="${i===mtabs.length-1?'active':''}" data-k="${t.k}">${t.label}</button>`).join("");
+  document.querySelectorAll("#mtabs button").forEach(b=>b.onclick=()=>{
+    document.querySelectorAll("#mtabs button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active"); showMeeting(m[b.dataset.k]);
+  });
+  showMeeting(m[mtabs[mtabs.length-1].k]);
+}
+function showMeeting(meet){
+  if(!meet){ $("#meeting").innerHTML='<div class="mut">—</div>'; return; }
+  let h = `<div class="metric"><span class="mut">CIO DECISION</span>
+    <span class="v">${meet.decision||"—"} ${meet.instrument?("· "+meet.instrument):""}</span></div>
+    <div class="metric"><span class="mut">Conviction</span><span class="v">${meet.conviction||"—"}/5</span></div>
+    <div class="metric"><span class="mut">Size / Lev</span><span class="v">${meet.size||"—"} / ${meet.leverage||"—"}</span></div>
+    <div style="margin:6px 0;color:var(--txt)">${meet.thesis||""}</div>`;
+  if(meet.dissent) h += `<div class="mut" style="margin-bottom:6px">Dissent: ${meet.dissent}</div>`;
+  h += `<div style="border-top:1px solid var(--line);margin:6px 0"></div>`;
+  for(const s of (meet.speakers||[])){
+    h += `<div class="view"><span class="who">${s.name} (${s.role}):</span> ${s.view}</div>`;
+  }
+  $("#meeting").innerHTML = h;
+}
+
+function renderResearch(r){
+  if(!r || !r.length){ $("#research").innerHTML='<div class="mut">no research yet</div>'; return; }
+  let h="";
+  for(const b of r.slice().reverse()){
+    h += `<div class="pos"><div class="h"><span style="color:#fff">${b.strategy||""}</span></div>
+      <div class="mut">${b.verdict||""}</div>
+      <div class="src">src: ${b.source||""} · ${b.date||""}</div></div>`;
+  }
+  $("#research").innerHTML = h;
+}
+
+function renderNews(n){
+  if(!n || !n.items || !n.items.length){ $("#news").innerHTML='<div class="mut">no news yet</div>'; return; }
+  let h="";
+  for(const it of n.items){
+    const s=it.sentiment; const pc = s==="BULLISH"?"bull":s==="BEARISH"?"bear":"flat";
+    const ic = s==="BULLISH"?"▲":s==="BEARISH"?"▼":"•";
+    h += `<div class="news"><span class="s ${cls(s==='BULLISH'?1:s==='BEARISH'?-1:0)}">${ic} ${s[0]}</span>${it.headline}</div>`;
+  }
+  $("#news").innerHTML = h;
+}
+
+function renderWeekly(w){
+  if(!w || w.error){ $("#weekly").innerHTML='<div class="mut">no weekly digest yet (Fri)</div>'; return; }
+  const s=w.sentiment_tally||{};
+  let h = `<div class="metric"><span class="mut">Week</span><span class="v">${w.week}</span></div>
+    <div class="metric"><span class="mut">Days / Sentiment</span>
+    <span class="v"><span class="up">▲${s.BULLISH||0}</span> <span class="down">▼${s.BEARISH||0}</span> <span class="mut">•${s.NEUTRAL||0}</span></span></div>
+    <div style="margin-top:6px" class="mut">Recurring themes:</div>`;
+  for(const t of (w.top_themes||[])) h += `<div class="news">• ${t}…</div>`;
+  $("#weekly").innerHTML = h;
+}
+
+async function tick(){
+  try{
+    const r = await fetch("/api/state");
+    const d = await r.json();
+    renderPrices(d.prices, d.fng);
+    renderBook(d.book);
+    renderHistory(d.book.trades);
+    renderMeetingTabs(d.meetings);
+    renderResearch(d.research);
+    renderNews(d.news);
+    renderWeekly(d.news.week);
+    $("#clock").textContent = new Date().toLocaleTimeString();
+  }catch(e){ $("#prices").innerHTML='<div class="mut">connecting…</div>'; }
+}
+
+tick();
+setInterval(tick, 5000);
+</script>
+</body>
+</html>

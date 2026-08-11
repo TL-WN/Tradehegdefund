@@ -1,0 +1,26 @@
+# --- dependencies (installed locally for the tunnel; not needed on Render) ---
+node_modules/
+npm-debug.log*
+
+# --- python ---
+__pycache__/
+*.pyc
+.venv/
+
+# --- runtime / transient ---
+public_url.txt
+tunnel.out
+*.log
+
+# --- firm data logs (regenerated at runtime; keep code, not state) ---
+meeting_logs/
+news_logs/
+research_logs/
+*.json
+!package.json
+
+# --- local chrome debug profile ---
+chrome-debug/
+
+# --- env (no secrets shipped) ---
+.env
