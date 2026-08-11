@@ -38,11 +38,32 @@ COINS = {
     "XRP": ("ripple", "XRP/USD"),
 }
 
+# Binance fallback symbols (no key, generous limits) in case CoinGecko rate-limits.
+BINANCE = {"BTC": "BTCUSDT", "ETH": "ETHUSDT", "BNB": "BNBUSDT", "SOL": "SOLUSDT", "XRP": "XRPUSDT"}
+
 
 def _get(url, timeout=8):
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         return json.loads(r.read().decode())
+
+
+def _binance_prices():
+    """Fallback live prices from Binance public API (no key). Returns dict per symbol
+    with price + 24h change (via 24h ticker). Best-effort; raises on failure."""
+    out = {}
+    for sym, bsym in BINANCE.items():
+        t = _get(f"https://api.binance.com/api/v3/ticker/24hr?symbol={bsym}")
+        out[sym] = {
+            "pair": sym + "/USD",
+            "price": float(t.get("lastPrice", 0)),
+            "chg24h": float(t.get("priceChangePercent", 0)),
+            "chg7d": None,
+            "chg30d": None,
+            "mcap": None,
+            "ath": None,
+        }
+    return out
 
 
 def refresh_prices():
@@ -67,8 +88,12 @@ def refresh_prices():
                     "mcap": x.get("market_cap"),
                     "ath": x.get("ath"),
                 }
-        except Exception as e:
-            out["_error"] = str(e)
+        except Exception:
+            # CoinGecko down/rate-limited -> fall back to Binance
+            try:
+                out = _binance_prices()
+            except Exception as e:
+                out["_error"] = str(e)
         try:
             fng = _get("https://api.alternative.me/fng/?limit=1")
             PRICE_CACHE["fng"] = {
@@ -108,7 +133,17 @@ def latest_meeting(kind):
 
 def build_state():
     prices, fng = refresh_prices()
-    book = _load_json("paper_book.json", {})
+    try:
+        from book import load as _book_load
+        book = _book_load()
+    except Exception:
+        book = _load_json("paper_book.json", {})
+    if not book or book.get("equity") is None:
+        try:
+            from book import _default_book
+            book = _default_book()
+        except Exception:
+            book = {}
     opening = latest_meeting("opening")
     closing = latest_meeting("closing")
     midday = latest_meeting("midday")
