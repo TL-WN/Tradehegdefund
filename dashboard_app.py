@@ -311,6 +311,32 @@ def build_state():
         if weeks:
             news_week = _load_json(os.path.join("news_logs", weeks[-1]))
 
+    # --- open positions blotter (live mark-to-market) ---
+    open_positions = []
+    try:
+        from book import price_for as _pf, _unrealized as _un, account_value as _av
+        op = book.get("open_position")
+        if op:
+            sym = op.get("symbol") or op.get("instrument") or ""
+            px = _pf(sym, {"crypto": {s: {"price": (prices.get(s, {}) or {}).get("price")} for s in prices}})
+            upnl = _un(op, {"crypto": {s: {"price": (prices.get(s, {}) or {}).get("price")} for s in prices}})
+            entry = op.get("entry")
+            stop = op.get("stop"); target = op.get("target")
+            d_stop = ((px - stop) / entry * 100.0) if (px and entry and stop) else None
+            d_tgt = ((target - px) / entry * 100.0) if (px and entry and target) else None
+            open_positions.append({
+                "symbol": sym, "side": op.get("side"),
+                "qty": op.get("qty"), "leverage": op.get("leverage"),
+                "margin_pct": op.get("margin_pct"), "notional": op.get("notional"),
+                "entry": entry, "mark": px, "stop": stop, "target": target,
+                "unrealized_pnl": round(upnl, 2),
+                "dist_to_stop_pct": round(d_stop, 2) if d_stop is not None else None,
+                "dist_to_target_pct": round(d_tgt, 2) if d_tgt is not None else None,
+                "opened": op.get("opened"),
+            })
+    except Exception as e:
+        open_positions = []
+
     return {
         "server_time": datetime.datetime.utcnow().isoformat() + "Z",
         "prices": prices,
@@ -330,6 +356,7 @@ def build_state():
             "midday": slim(midday),
             "closing": slim(closing),
         },
+        "open_positions": open_positions,
         "research": research[-6:],
         "news": {"items": news_items, "week": news_week},
     }
