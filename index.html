@@ -288,7 +288,11 @@ function renderWeekly(w){
 }
 
 let curSym = "BTC";
-let liveTail = [];  // rolling live-price points for the animated tail
+let liveTail = [];          // rolling live-price points for the animated tail
+let viewStart = 0, viewEnd = null;  // zoom window (indices into candles); null = end
+let dragging = false, dragX = 0, dragStart = 0;
+
+function resetView(){ viewStart = 0; viewEnd = null; }
 
 function renderChart(){
   const cv = $("#chart");
@@ -299,12 +303,18 @@ function renderChart(){
   ctx.clearRect(0,0,W,H);
 
   fetch("/api/series?sym=" + curSym).then(r=>r.json()).then(s=>{
-    const candles = s.candles || [];
-    if(!candles.length){ return; }
+    const all = s.candles || [];
+    if(!all.length){ return; }
     // animate live tail: keep appending the live price
-    if(s.live!=null){ liveTail.push(s.live); if(liveTail.length>40) liveTail.shift(); }
+    if(s.live!=null){ liveTail.push(s.live); if(liveTail.length>60) liveTail.shift(); }
 
-    // price range from candles + levels
+    // apply zoom window
+    const end = (viewEnd==null) ? all.length : viewEnd;
+    const start = Math.max(0, viewStart);
+    const candles = all.slice(start, end);
+    if(candles.length < 2){ return; }
+
+    // price range from visible candles + levels + live
     let lo=1e18, hi=-1e18;
     for(const c of candles){ lo=Math.min(lo,c.l); hi=Math.max(hi,c.h); }
     const lv = s.levels||{};
@@ -330,19 +340,33 @@ function renderChart(){
       const up = c.c>=c.o;
       ctx.strokeStyle = up?"#19c37d":"#ff4d4f";
       ctx.fillStyle = up?"#19c37d":"#ff4d4f";
-      // wick
       ctx.beginPath(); ctx.moveTo(x(i), y(c.h)); ctx.lineTo(x(i), y(c.l)); ctx.stroke();
-      // body
       const yo=y(c.o), yc=y(c.c); const top=Math.min(yo,yc); const bh=Math.max(1,Math.abs(yc-yo));
       if(c.live){ ctx.globalAlpha=0.95; }
       ctx.fillRect(x(i)-bw/2, top, bw, bh); ctx.globalAlpha=1;
     });
 
-    // live tail line (animated)
+    // ---- livelier price tail: gradient stroke + glow + pulsing head ----
     if(liveTail.length>1){
-      ctx.strokeStyle="#5ed0ff"; ctx.lineWidth=1.5; ctx.beginPath();
-      liveTail.forEach((v,i)=>{ const xx=padL+plotW*(i/(liveTail.length-1)); const yy=y(v);
-        i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy); }); ctx.stroke();
+      const tx = i => padL + plotW*(i/(liveTail.length-1));
+      // glow underlay
+      ctx.save();
+      ctx.shadowColor = "#5ed0ff"; ctx.shadowBlur = 8;
+      const grad = ctx.createLinearGradient(0, padT, 0, padT+plotH);
+      grad.addColorStop(0, "rgba(94,208,255,0.95)");
+      grad.addColorStop(1, "rgba(94,208,255,0.35)");
+      ctx.strokeStyle = grad; ctx.lineWidth = 2; ctx.lineJoin="round";
+      ctx.beginPath();
+      liveTail.forEach((v,i)=>{ const xx=tx(i), yy=y(v); i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy); });
+      ctx.stroke();
+      ctx.restore();
+      // pulsing head dot
+      const hx = tx(liveTail.length-1), hy = y(liveTail[liveTail.length-1]);
+      const pulse = 3 + 2*Math.abs(Math.sin(Date.now()/300));
+      ctx.fillStyle = "rgba(94,208,255,0.25)";
+      ctx.beginPath(); ctx.arc(hx, hy, pulse+4, 0, 7); ctx.fill();
+      ctx.fillStyle = "#5ed0ff";
+      ctx.beginPath(); ctx.arc(hx, hy, pulse, 0, 7); ctx.fill();
     }
 
     // position levels overlay
@@ -359,11 +383,136 @@ function renderChart(){
       ctx.fillStyle="#5ed0ff"; ctx.fillText(fmt(s.live, s.live>1000?0:2), W-padR+4, yy+3);
     }
 
+    // zoom hint
+    const zoomed = (start>0 || end<all.length);
+    const hint = zoomed ? `view ${start+1}-${end}/${all.length} · scroll=zoom · drag=pan · dbl-click=reset` : `scroll=zoom · drag=pan · dbl-click=reset`;
+    ctx.fillStyle = "#3a4658"; ctx.font="9px monospace";
+    ctx.fillText(hint, padL+4, H-5);
+
     $("#chartmeta").textContent =
       `${curSym}/USD · last ${fmt(s.live, s.live>1000?0:2)} · 24h ${sign(s.chg24h||0)}${fmt(s.chg24h||0)}%` +
       (lv.entry!=null? `  |  position: ${lv.side?.toUpperCase()} @ ${fmt(lv.entry)} (${lv.lev||1}x)` : "  |  no open position");
   }).catch(()=>{});
 }
+
+// ---- zoom + pan interactions (reworked with fetch/draw split) ----
+let chartData = null;   // last fetched series + computed view
+function chartGeom(){
+  const cv = $("#chart");
+  const W = cv.clientWidth, padL=8, padR=58;
+  return {W, plotW: W-padL-padR, padL};
+}
+function zoomAt(px, factor){
+  const win = (viewEnd==null ? 160 : viewEnd) - viewStart;
+  let ns = Math.round(win*factor);
+  ns = Math.max(8, Math.min(400, ns));
+  const g = chartGeom();
+  const frac = Math.max(0, Math.min(1, (px - g.padL) / g.plotW));
+  const anchor = viewStart + frac*win;
+  viewStart = Math.max(0, Math.round(anchor - frac*ns));
+  viewEnd = viewStart + ns;
+}
+async function fetchChart(){
+  try{
+    const s = await (await fetch("/api/series?sym="+curSym)).json();
+    chartData = s;
+    if(s.live!=null){ liveTail.push(s.live); if(liveTail.length>80) liveTail.shift(); }
+  }catch(e){}
+}
+function drawChart(){
+  const cv = $("#chart");
+  if(!cv) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = cv.clientWidth, H = 300;
+  cv.width = W*dpr; cv.height = H*dpr;
+  const ctx = cv.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+  const s = chartData;
+  if(!s || !(s.candles||[]).length){ requestAnimationFrame(drawChart); return; }
+
+  const all = s.candles;
+  const end = (viewEnd==null) ? all.length : Math.min(viewEnd, all.length);
+  const start = Math.max(0, viewStart);
+  const candles = all.slice(start, end);
+  if(candles.length < 2){ requestAnimationFrame(drawChart); return; }
+
+  let lo=1e18, hi=-1e18;
+  for(const c of candles){ lo=Math.min(lo,c.l); hi=Math.max(hi,c.h); }
+  const lv = s.levels||{};
+  for(const v of [lv.entry,lv.stop,lv.target]){ if(v){ lo=Math.min(lo,v); hi=Math.max(hi,v); } }
+  if(s.live!=null){ lo=Math.min(lo,s.live); hi=Math.max(hi,s.live); }
+  const pad=(hi-lo)*0.08||1; lo-=pad; hi+=pad;
+
+  const padL=8, padR=58, padT=10, padB=18;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const x=i=> padL + (i+0.5)*(plotW/candles.length);
+  const y=p=> padT + (hi-p)/(hi-lo)*plotH;
+
+  // grid + axis
+  ctx.strokeStyle="#16202e"; ctx.fillStyle="#5b6677"; ctx.font="10px monospace"; ctx.lineWidth=1;
+  for(let g=0;g<=4;g++){ const p=lo+(hi-lo)*g/4; const yy=y(p);
+    ctx.beginPath(); ctx.moveTo(padL,yy); ctx.lineTo(W-padR,yy); ctx.stroke();
+    ctx.fillText(fmt(p, p>1000?0:2), W-padR+4, yy+3);
+  }
+  // candles
+  const bw=Math.max(2, plotW/candles.length*0.6);
+  candles.forEach((c,i)=>{
+    const up = c.c>=c.o;
+    ctx.strokeStyle = up?"#19c37d":"#ff4d4f"; ctx.fillStyle = up?"#19c37d":"#ff4d4f";
+    ctx.beginPath(); ctx.moveTo(x(i), y(c.h)); ctx.lineTo(x(i), y(c.l)); ctx.stroke();
+    const yo=y(c.o), yc=y(c.c); const top=Math.min(yo,yc); const bh=Math.max(1,Math.abs(yc-yo));
+    if(c.live) ctx.globalAlpha=0.95;
+    ctx.fillRect(x(i)-bw/2, top, bw, bh); ctx.globalAlpha=1;
+  });
+  // lively tail: gradient + glow + pulsing head
+  if(liveTail.length>1){
+    const tx = i => padL + plotW*(i/(liveTail.length-1));
+    ctx.save();
+    ctx.shadowColor="#5ed0ff"; ctx.shadowBlur=8;
+    const grad = ctx.createLinearGradient(0,padT,0,padT+plotH);
+    grad.addColorStop(0,"rgba(94,208,255,0.95)"); grad.addColorStop(1,"rgba(94,208,255,0.35)");
+    ctx.strokeStyle=grad; ctx.lineWidth=2; ctx.lineJoin="round";
+    ctx.beginPath();
+    liveTail.forEach((v,i)=>{ const xx=tx(i), yy=y(v); i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy); });
+    ctx.stroke(); ctx.restore();
+    const hx=tx(liveTail.length-1), hy=y(liveTail[liveTail.length-1]);
+    const pulse = 3 + 2*Math.abs(Math.sin(Date.now()/280));
+    ctx.fillStyle="rgba(94,208,255,0.22)"; ctx.beginPath(); ctx.arc(hx,hy,pulse+5,0,7); ctx.fill();
+    ctx.fillStyle="#5ed0ff"; ctx.beginPath(); ctx.arc(hx,hy,pulse,0,7); ctx.fill();
+  }
+  // position levels
+  const lvlDefs=[["entry","#5ed0ff","ENTRY"],["target","#19c37d","TARGET"],["stop","#ff4d4f","STOP"]];
+  for(const [k,col,lab] of lvlDefs){ const v=lv[k]; if(v==null) continue;
+    const yy=y(v); ctx.strokeStyle=col; ctx.setLineDash([4,3]); ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(padL,yy); ctx.lineTo(W-padR,yy); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle=col; ctx.fillText(lab+" "+fmt(v, v>1000?0:2), padL+4, yy-3);
+  }
+  // live price tag
+  if(s.live!=null){ const yy=y(s.live);
+    ctx.fillStyle="#5ed0ff"; ctx.beginPath(); ctx.arc(W-padR-2, yy, 3, 0, 7); ctx.fill();
+    ctx.fillStyle="#5ed0ff"; ctx.fillText(fmt(s.live, s.live>1000?0:2), W-padR+4, yy+3);
+  }
+  const zoomed = (start>0 || end<all.length);
+  ctx.fillStyle="#3a4658"; ctx.font="9px monospace";
+  ctx.fillText(zoomed?`view ${start+1}-${end}/${all.length} · scroll=zoom · drag=pan · dbl-click=reset`
+                     :`scroll=zoom · drag=pan · dbl-click=reset`, padL+4, H-5);
+  $("#chartmeta").textContent =
+    `${curSym}/USD · last ${fmt(s.live, s.live>1000?0:2)} · 24h ${sign(s.chg24h||0)}${fmt(s.chg24h||0)}%` +
+    (lv.entry!=null? `  |  position: ${lv.side?.toUpperCase()} @ ${fmt(lv.entry)} (${lv.lev||1}x)` : "  |  no open position");
+  requestAnimationFrame(drawChart);
+}
+// wheel zoom / drag pan / dbl reset
+$("#chart").addEventListener("wheel", e=>{ e.preventDefault(); zoomAt(e.offsetX, e.deltaY>0?1.2:0.82); }, {passive:false});
+$("#chart").addEventListener("mousedown", e=>{ dragging=true; dragX=e.offsetX; });
+window.addEventListener("mouseup", ()=> dragging=false);
+$("#chart").addEventListener("mousemove", e=>{
+  if(!dragging) return;
+  const g=chartGeom(); const dx=e.offsetX-dragX;
+  const win=(viewEnd==null?160:viewEnd)-viewStart;
+  const shift=Math.round(-dx/g.plotW*win);
+  if(shift!==0){ viewStart=Math.max(0,viewStart+shift); viewEnd=viewStart+win; dragX=e.offsetX; }
+});
+$("#chart").addEventListener("dblclick", ()=>{ resetView(); });
 
 async function tick(){
   try{
@@ -376,7 +525,7 @@ async function tick(){
     renderResearch(d.research);
     renderNews(d.news);
     renderWeekly(d.news.week);
-    renderChart();
+    fetchChart();
     $("#clock").textContent = new Date().toLocaleTimeString();
   }catch(e){ $("#prices").innerHTML='<div class="mut">connecting…</div>'; }
 }
@@ -387,11 +536,11 @@ setInterval(tick, 5000);
 document.querySelectorAll("#symtabs button").forEach(b=>{
   b.onclick=()=>{
     document.querySelectorAll("#symtabs button").forEach(x=>x.classList.remove("active"));
-    b.classList.add("active"); curSym=b.dataset.sym; liveTail=[]; renderChart();
+    b.classList.add("active"); curSym=b.dataset.sym; liveTail=[]; resetView(); fetchChart();
   };
 });
-// animate the live tail a bit faster than the 5s state poll
-setInterval(()=>{ if(document.visibilityState==="visible") renderChart(); }, 3000);
+// smooth animation loop + periodic data refresh
+if(!window.__chartStarted){ window.__chartStarted=true; drawChart(); setInterval(fetchChart, 2500); }
 </script>
 </body>
 </html>
