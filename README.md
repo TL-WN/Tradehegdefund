@@ -94,8 +94,10 @@ it after a reboot — so the desk comes back on its own. The public URL is a ran
 `*.loca.lt` subdomain that changes on each restart (read `public_url.txt` for the current one).
 
 **For a FIXED permanent URL** (never changes) you need a free account on a host:
-- **Render**: push the folder to GitHub, create a Web Service (start cmd `python dashboard_app.py 8765`,
-  health check `/api/state`). Gets a permanent `*.onrender.com` URL.
+- **Render** (recommended): connect the GitHub repo (`TL-WN/Tradehegdefund`) to Render →
+  New Web Service → the included `render.yaml` sets it up (start `python dashboard_app.py`,
+  health `/api/state`, free tier). `dashboard_app.py` reads `$PORT` so it binds to Render's
+  port. Result: permanent `*.onrender.com` URL. No pip deps (stdlib only).
 - **PythonAnywhere**: upload + make `dashboard_app.py` a web app on a manual port.
 - **localhost.run custom domain**: free SSH key → fixed subdomain.
 Drop me a Render/GitHub token and I'll do the permanent deploy.

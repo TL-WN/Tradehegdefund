@@ -1,0 +1,16 @@
+# Render free-tier deploy config for the HERMES CAPITAL hedge desk dashboard.
+# The app is pure Python stdlib (no pip deps) and binds to $PORT.
+# Start command: python dashboard_app.py
+services:
+  - type: web
+    name: hermes-capital-desk
+    runtime: python
+    plan: free
+    region: oregon          # or frankfurt / singapore — pick nearest you
+    branch: main
+    buildCommand: "echo no-build-needed"
+    startCommand: "python dashboard_app.py"
+    healthCheckPath: "/api/state"
+    envVars:
+      - key: PORT
+        value: "8765"        # Render overrides this with its own assigned port

@@ -1,0 +1,2 @@
+# Pure Python stdlib app — no third-party pip dependencies required.
+# (localtunnel is only used by start_desk.py for a local public tunnel; not needed on Render.)
