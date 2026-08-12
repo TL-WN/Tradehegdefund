@@ -3,16 +3,11 @@
   "date": "2026-08-12",
   "source": "offline-data-fallback",
   "requested_by": "ci_engine",
-  "count": 2,
+  "count": 1,
   "items": [
     {
       "headline": "Fear & Greed at 27 (FEAR) \u2014 crowd sentiment gauge",
       "sentiment": "BEARISH",
-      "raw": ""
-    },
-    {
-      "headline": "BNB up 3.2% in 24h \u2014 bid momentum",
-      "sentiment": "BULLISH",
       "raw": ""
     }
   ]

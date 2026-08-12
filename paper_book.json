@@ -19,7 +19,7 @@
   "month_start_equity": 1000000.0,
   "realized_mtd": 0.0,
   "max_leverage_used": 3,
-  "max_drawdown_mtd": 0.004375381551124156,
+  "max_drawdown_mtd": 0.006647300884375805,
   "drawdown_halts": 0,
   "halted": false,
   "halted_at": null,
