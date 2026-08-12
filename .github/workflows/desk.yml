@@ -41,3 +41,13 @@ jobs:
             git commit -m "ci: refresh desk data $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             git push
           fi
+
+      - name: Send Telegram desk report (morning / night)
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          RENDER_URL: https://hermes-capital-desk.onrender.com
+        run: |
+          HOUR=$(date -u +%H)
+          if [ "$HOUR" -ge 6 ] && [ "$HOUR" -lt 14 ]; then KIND=morning; elif [ "$HOUR" -ge 14 ] && [ "$HOUR" -lt 23 ]; then KIND=night; else KIND=status; fi
+          python hedge_report.py $KIND || echo "report send failed (token not configured?)"
