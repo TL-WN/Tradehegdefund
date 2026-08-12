@@ -3,7 +3,7 @@
   "date": "2026-08-12",
   "source": "CryptoPanic (live)",
   "requested_by": "Nick Reed, News Reporter",
-  "count": 9,
+  "count": 10,
   "items": [
     {
       "headline": "INSIGHT: US banks are facing $325B in unrealized losses, per Barchart.",
@@ -24,6 +24,11 @@
       "headline": "MoneyGram backs Solana \u2013 Can rising DeFi liquidity power SOL\u2019s Q3 rally?",
       "sentiment": "BULLISH",
       "raw": "MoneyGram backs Solana \u2013 Can rising DeFi liquidity power SOL\u2019s Q3 rally?"
+    },
+    {
+      "headline": "Tim Draper Says Bitcoin Is Headed for \u2018Infinity\u2019 Against Dollar as Growing BTC Payments Could Trigger Bank Runs",
+      "sentiment": "NEUTRAL",
+      "raw": "Tim Draper Says Bitcoin Is Headed for \u2018Infinity\u2019 Against Dollar as Growing BTC Payments Could Trigger Bank Runs"
     },
     {
       "headline": "Broadridge's Blockchain Repo Engine Cleared $8 Trillion in July as Tokenized Finance Scales",

@@ -1,0 +1,33 @@
+{
+  "type": "RESEARCH_BRIEF",
+  "date": "2026-08-12",
+  "requested_by": "verify",
+  "source": "internal catalogue",
+  "strategy": "breakout_20d",
+  "strategy_name": "20-day channel breakout (long new high, short new low)",
+  "backtest": {
+    "BTC": {
+      "sym": "BTC",
+      "bars": 121,
+      "strat_return_pct": 6.37,
+      "buyhold_return_pct": -14.13,
+      "trades": 10,
+      "win_rate_pct": 50.0,
+      "max_drawdown_pct": 8.38,
+      "vs_buyhold_pct": 20.5,
+      "final_equity": 1.0598
+    },
+    "ETH": {
+      "sym": "ETH",
+      "bars": 121,
+      "strat_return_pct": 6.02,
+      "buyhold_return_pct": -18.7,
+      "trades": 10,
+      "win_rate_pct": 56.5,
+      "max_drawdown_pct": 17.89,
+      "vs_buyhold_pct": 24.72,
+      "final_equity": 1.0473
+    }
+  },
+  "verdict_hint": "BTC: 6.37% vs BH -14.13% (BEATS BH), win 50.0%, maxDD 8.38% | ETH: 6.02% vs BH -18.7% (BEATS BH), win 56.5%, maxDD 17.89%"
+}

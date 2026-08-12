@@ -15,6 +15,7 @@ Endpoints:
 """
 import json
 import os
+import re
 import sys
 import time
 import datetime
@@ -215,11 +216,20 @@ def build_series(sym="BTC"):
     pos_sym = (op.get("symbol") or "").upper()
     levels = None
     if op and op.get("qty") and (pos_sym == sym or not pos_sym):
+        def _num(v):
+            # stop/target may be stored as human-readable strings like
+            # "63,200 (range low -- hard invalidation)"; extract the leading number.
+            if v is None:
+                return None
+            if isinstance(v, (int, float)):
+                return float(v)
+            m = re.search(r"-?\d[\d,]*\.?\d*", str(v).replace(",", ""))
+            return float(m.group(0)) if m else None
         levels = {
             "side": op.get("side"),
-            "entry": op.get("entry"),
-            "stop": op.get("stop"),
-            "target": op.get("target"),
+            "entry": _num(op.get("entry")),
+            "stop": _num(op.get("stop")),
+            "target": _num(op.get("target")),
             "lev": op.get("leverage"),
         }
 
