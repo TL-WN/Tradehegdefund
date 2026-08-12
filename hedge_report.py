@@ -68,6 +68,17 @@ def build(kind, st):
     if not meet:
         meet = st.get("meeting") or {}
     fng = st.get("fng")
+    if isinstance(fng, dict):
+        fng = fng.get("value")
+    # fallback: read today's automated meeting log if not in live state
+    if not meet.get("decision"):
+        import glob
+        today = datetime.date.today().isoformat()
+        for fn in glob.glob(os.path.join(HERE, "meeting_logs", f"opening_{today}.json")):
+            try:
+                meet = json.load(open(fn)); break
+            except Exception:
+                pass
     lines = [f"🏦 <b>HERMES CAPITAL — {kind.upper()} REPORT</b> ({now})"]
     if eq is not None:
         lines.append(f"Paper equity: ${eq:,.0f}  |  Realized P&L (MTD): ${pnl:,.0f}")
