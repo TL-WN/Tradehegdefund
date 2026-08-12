@@ -1,7 +1,7 @@
 {
   "starting_equity": 1000000.0,
   "equity": 1000000.0,
-  "peak_equity": 1000000.0,
+  "peak_equity": 1000203.8732586965,
   "open_position": {
     "instrument": "BTC",
     "symbol": "BTC",
