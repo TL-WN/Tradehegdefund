@@ -1,0 +1,33 @@
+{
+  "type": "RESEARCH_BRIEF",
+  "date": "2026-08-12",
+  "requested_by": "verify",
+  "source": "internal catalogue",
+  "strategy": "meanrev_20d",
+  "strategy_name": "20-day z-score mean reversion (long below -1.5\u03c3, short above +1.5\u03c3)",
+  "backtest": {
+    "BTC": {
+      "sym": "BTC",
+      "bars": 121,
+      "strat_return_pct": -11.95,
+      "buyhold_return_pct": -14.13,
+      "trades": 10,
+      "win_rate_pct": 41.9,
+      "max_drawdown_pct": 20.22,
+      "vs_buyhold_pct": 2.18,
+      "final_equity": 0.8813
+    },
+    "ETH": {
+      "sym": "ETH",
+      "bars": 121,
+      "strat_return_pct": -2.48,
+      "buyhold_return_pct": -18.7,
+      "trades": 10,
+      "win_rate_pct": 48.4,
+      "max_drawdown_pct": 20.63,
+      "vs_buyhold_pct": 16.23,
+      "final_equity": 0.9622
+    }
+  },
+  "verdict_hint": "BTC: -11.95% vs BH -14.13% (BEATS BH), win 41.9%, maxDD 20.22% | ETH: -2.48% vs BH -18.7% (BEATS BH), win 48.4%, maxDD 20.63%"
+}

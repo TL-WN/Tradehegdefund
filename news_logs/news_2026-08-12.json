@@ -1,14 +1,54 @@
 {
   "type": "NEWS_BRIEF",
   "date": "2026-08-12",
-  "source": "offline-data-fallback",
-  "requested_by": "ci_engine",
-  "count": 1,
+  "source": "CryptoPanic (live)",
+  "requested_by": "Nick Reed, News Reporter",
+  "count": 9,
   "items": [
     {
-      "headline": "Fear & Greed at 27 (FEAR) \u2014 crowd sentiment gauge",
+      "headline": "INSIGHT: US banks are facing $325B in unrealized losses, per Barchart.",
       "sentiment": "BEARISH",
-      "raw": ""
+      "raw": "INSIGHT: US banks are facing $325B in unrealized losses, per Barchart."
+    },
+    {
+      "headline": "INTEL: IRAN TO JOIN BRICS' NEW DEVELOPMENT BANK SOON | per ISNA",
+      "sentiment": "BEARISH",
+      "raw": "INTEL: IRAN TO JOIN BRICS' NEW DEVELOPMENT BANK SOON | per ISNA"
+    },
+    {
+      "headline": "Bitcoin flashes explosive 330% rally signal",
+      "sentiment": "BULLISH",
+      "raw": "Bitcoin flashes explosive 330% rally signal"
+    },
+    {
+      "headline": "MoneyGram backs Solana \u2013 Can rising DeFi liquidity power SOL\u2019s Q3 rally?",
+      "sentiment": "BULLISH",
+      "raw": "MoneyGram backs Solana \u2013 Can rising DeFi liquidity power SOL\u2019s Q3 rally?"
+    },
+    {
+      "headline": "Broadridge's Blockchain Repo Engine Cleared $8 Trillion in July as Tokenized Finance Scales",
+      "sentiment": "NEUTRAL",
+      "raw": "Broadridge's Blockchain Repo Engine Cleared $8 Trillion in July as Tokenized Finance Scales"
+    },
+    {
+      "headline": "XRP Tests $1 as Million-XRP Wallets Keep Growing",
+      "sentiment": "NEUTRAL",
+      "raw": "XRP Tests $1 as Million-XRP Wallets Keep Growing"
+    },
+    {
+      "headline": "LATEST: Strategy CEO Phong Le called the company \"the JP Morgan of the digital economy,\" with ~840,000 BTC on its balance sheet.",
+      "sentiment": "NEUTRAL",
+      "raw": "LATEST: Strategy CEO Phong Le called the company \"the JP Morgan of the digital economy,\" with ~840,000 BTC on its balance sheet."
+    },
+    {
+      "headline": "Metaplanet Moves $250M in Bitcoin as Paper Loss Swells to $1.4B",
+      "sentiment": "NEUTRAL",
+      "raw": "Metaplanet Moves $250M in Bitcoin as Paper Loss Swells to $1.4B"
+    },
+    {
+      "headline": "UPDATE: $2.9T asset manager Amundi boosted its $MSTR position by 148%, now holding 1.32M shares, per BTC Treasuries.",
+      "sentiment": "NEUTRAL",
+      "raw": "UPDATE: $2.9T asset manager Amundi boosted its $MSTR position by 148%, now holding 1.32M shares, per BTC Treasuries."
     }
   ]
 }

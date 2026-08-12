@@ -29,5 +29,7 @@
       "final_equity": 1.0701
     }
   },
-  "verdict_hint": "BTC: 3.92% vs BH -14.13% (BEATS BH), win 50.0%, maxDD 18.2% | ETH: 9.77% vs BH -18.7% (BEATS BH), win 54.0%, maxDD 19.86%"
+  "verdict_hint": "BTC: 3.92% vs BH -14.13% (BEATS BH), win 50.0%, maxDD 18.2% | ETH: 9.77% vs BH -18.7% (BEATS BH), win 54.0%, maxDD 19.86%",
+  "web_source": "verify",
+  "web_finding": "20-day moving average momentum strategy backtest"
 }

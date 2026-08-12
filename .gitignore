@@ -20,3 +20,4 @@ chrome-debug/
 
 # --- exclude any stray local-only json not part of the deploy ---
 briefing.txt
+hedge_report_chart.png
