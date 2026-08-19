@@ -7,11 +7,11 @@
   "conviction": 2,
   "thesis": "Range/neutral regime. No edge, stay flat.",
   "prices": {
-    "BTC": 64309,
-    "ETH": 1910.7,
-    "BNB": 601.58,
-    "SOL": 76.99,
-    "XRP": 1.0
+    "BTC": 64235,
+    "ETH": 1910.97,
+    "BNB": 601.31,
+    "SOL": 76.92,
+    "XRP": 1.003
   },
   "fng": "46",
   "speakers": [
