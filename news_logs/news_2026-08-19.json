@@ -3,11 +3,26 @@
   "date": "2026-08-19",
   "source": "offline-data-fallback",
   "requested_by": "ci_engine",
-  "count": 1,
+  "count": 4,
   "items": [
     {
       "headline": "Fear & Greed at 46 (NEUTRAL) \u2014 crowd sentiment gauge",
       "sentiment": "NEUTRAL",
+      "raw": ""
+    },
+    {
+      "headline": "ETH up 3.9% in 24h \u2014 bid momentum",
+      "sentiment": "BULLISH",
+      "raw": ""
+    },
+    {
+      "headline": "SOL up 6.0% in 24h \u2014 bid momentum",
+      "sentiment": "BULLISH",
+      "raw": ""
+    },
+    {
+      "headline": "XRP up 3.5% in 24h \u2014 bid momentum",
+      "sentiment": "BULLISH",
       "raw": ""
     }
   ]
