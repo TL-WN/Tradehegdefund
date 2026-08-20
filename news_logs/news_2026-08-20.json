@@ -1,0 +1,39 @@
+{
+  "type": "NEWS_BRIEF",
+  "date": "2026-08-20",
+  "source": "offline-data-fallback",
+  "requested_by": "ci_engine",
+  "count": 6,
+  "items": [
+    {
+      "headline": "Fear & Greed at 62 (GREED) \u2014 crowd sentiment gauge",
+      "sentiment": "BULLISH",
+      "raw": ""
+    },
+    {
+      "headline": "BTC up 7.4% in 24h \u2014 bid momentum",
+      "sentiment": "BULLISH",
+      "raw": ""
+    },
+    {
+      "headline": "ETH up 18.2% in 24h \u2014 bid momentum",
+      "sentiment": "BULLISH",
+      "raw": ""
+    },
+    {
+      "headline": "BNB up 4.3% in 24h \u2014 bid momentum",
+      "sentiment": "BULLISH",
+      "raw": ""
+    },
+    {
+      "headline": "SOL up 10.4% in 24h \u2014 bid momentum",
+      "sentiment": "BULLISH",
+      "raw": ""
+    },
+    {
+      "headline": "XRP up 10.7% in 24h \u2014 bid momentum",
+      "sentiment": "BULLISH",
+      "raw": ""
+    }
+  ]
+}
