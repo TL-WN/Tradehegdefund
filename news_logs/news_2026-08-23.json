@@ -3,7 +3,7 @@
   "date": "2026-08-23",
   "source": "offline-data-fallback",
   "requested_by": "ci_engine",
-  "count": 3,
+  "count": 2,
   "items": [
     {
       "headline": "Fear & Greed at 66 (GREED) \u2014 crowd sentiment gauge",
@@ -11,13 +11,8 @@
       "raw": ""
     },
     {
-      "headline": "ETH down 3.4% in 24h \u2014 risk-off pressure",
+      "headline": "ETH down 3.6% in 24h \u2014 risk-off pressure",
       "sentiment": "BEARISH",
-      "raw": ""
-    },
-    {
-      "headline": "XRP up 4.0% in 24h \u2014 bid momentum",
-      "sentiment": "BULLISH",
       "raw": ""
     }
   ]
