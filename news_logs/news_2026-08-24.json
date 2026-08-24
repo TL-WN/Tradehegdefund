@@ -3,10 +3,15 @@
   "date": "2026-08-24",
   "source": "offline-data-fallback",
   "requested_by": "ci_engine",
-  "count": 1,
+  "count": 2,
   "items": [
     {
       "headline": "Fear & Greed at 73 (GREED) \u2014 crowd sentiment gauge",
+      "sentiment": "BULLISH",
+      "raw": ""
+    },
+    {
+      "headline": "ETH up 3.5% in 24h \u2014 bid momentum",
       "sentiment": "BULLISH",
       "raw": ""
     }
