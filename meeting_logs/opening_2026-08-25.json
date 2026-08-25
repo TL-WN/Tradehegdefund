@@ -1,0 +1,23 @@
+{
+  "kind": "OPENING",
+  "date": "2026-08-25",
+  "generated_by": "ci_automated",
+  "note": "Automated rule-based call (no LLM). Persona meetings run on the laptop.",
+  "decision": "LONG",
+  "conviction": 3,
+  "thesis": "Momentum + crowd greed. Trend-follow with a tight stop.",
+  "prices": {
+    "BTC": 79734,
+    "ETH": 2493.54,
+    "BNB": 709.41,
+    "SOL": 101.87,
+    "XRP": 1.5
+  },
+  "fng": "74",
+  "speakers": [
+    {
+      "role": "Automated Engine",
+      "view": "Momentum + crowd greed. Trend-follow with a tight stop."
+    }
+  ]
+}
