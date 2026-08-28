@@ -1,0 +1,19 @@
+{
+  "type": "NEWS_BRIEF",
+  "date": "2026-08-28",
+  "source": "offline-data-fallback",
+  "requested_by": "ci_engine",
+  "count": 2,
+  "items": [
+    {
+      "headline": "Fear & Greed at 73 (GREED) \u2014 crowd sentiment gauge",
+      "sentiment": "BULLISH",
+      "raw": ""
+    },
+    {
+      "headline": "SOL up 8.2% in 24h \u2014 bid momentum",
+      "sentiment": "BULLISH",
+      "raw": ""
+    }
+  ]
+}
