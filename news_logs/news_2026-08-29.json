@@ -3,36 +3,11 @@
   "date": "2026-08-29",
   "source": "offline-data-fallback",
   "requested_by": "ci_engine",
-  "count": 6,
+  "count": 1,
   "items": [
     {
       "headline": "Fear & Greed at 68 (GREED) \u2014 crowd sentiment gauge",
       "sentiment": "BULLISH",
-      "raw": ""
-    },
-    {
-      "headline": "BTC down 4.1% in 24h \u2014 risk-off pressure",
-      "sentiment": "BEARISH",
-      "raw": ""
-    },
-    {
-      "headline": "ETH down 3.3% in 24h \u2014 risk-off pressure",
-      "sentiment": "BEARISH",
-      "raw": ""
-    },
-    {
-      "headline": "BNB down 3.7% in 24h \u2014 risk-off pressure",
-      "sentiment": "BEARISH",
-      "raw": ""
-    },
-    {
-      "headline": "SOL down 4.8% in 24h \u2014 risk-off pressure",
-      "sentiment": "BEARISH",
-      "raw": ""
-    },
-    {
-      "headline": "XRP down 5.7% in 24h \u2014 risk-off pressure",
-      "sentiment": "BEARISH",
       "raw": ""
     }
   ]
