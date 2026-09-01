@@ -1,0 +1,23 @@
+{
+  "kind": "OPENING",
+  "date": "2026-09-01",
+  "generated_by": "ci_automated",
+  "note": "Automated rule-based call (no LLM). Persona meetings run on the laptop.",
+  "decision": "LONG",
+  "conviction": 2,
+  "thesis": "Greed regime, cautious long into strength.",
+  "prices": {
+    "BTC": 78821,
+    "ETH": 2475.48,
+    "BNB": 693.29,
+    "SOL": 103.44,
+    "XRP": 1.39
+  },
+  "fng": "69",
+  "speakers": [
+    {
+      "role": "Automated Engine",
+      "view": "Greed regime, cautious long into strength."
+    }
+  ]
+}
