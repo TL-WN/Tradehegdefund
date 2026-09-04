@@ -3,7 +3,7 @@
   "date": "2026-09-04",
   "source": "offline-data-fallback",
   "requested_by": "ci_engine",
-  "count": 5,
+  "count": 3,
   "items": [
     {
       "headline": "Fear & Greed at 74 (GREED) \u2014 crowd sentiment gauge",
@@ -11,23 +11,13 @@
       "raw": ""
     },
     {
-      "headline": "BTC up 4.2% in 24h \u2014 bid momentum",
-      "sentiment": "BULLISH",
+      "headline": "SOL down 3.3% in 24h \u2014 risk-off pressure",
+      "sentiment": "BEARISH",
       "raw": ""
     },
     {
-      "headline": "ETH up 4.9% in 24h \u2014 bid momentum",
-      "sentiment": "BULLISH",
-      "raw": ""
-    },
-    {
-      "headline": "SOL up 3.4% in 24h \u2014 bid momentum",
-      "sentiment": "BULLISH",
-      "raw": ""
-    },
-    {
-      "headline": "XRP up 5.9% in 24h \u2014 bid momentum",
-      "sentiment": "BULLISH",
+      "headline": "XRP down 4.4% in 24h \u2014 risk-off pressure",
+      "sentiment": "BEARISH",
       "raw": ""
     }
   ]
