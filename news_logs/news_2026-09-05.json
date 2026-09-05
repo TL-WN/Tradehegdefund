@@ -3,7 +3,7 @@
   "date": "2026-09-05",
   "source": "offline-data-fallback",
   "requested_by": "ci_engine",
-  "count": 3,
+  "count": 2,
   "items": [
     {
       "headline": "Fear & Greed at 73 (GREED) \u2014 crowd sentiment gauge",
@@ -11,12 +11,7 @@
       "raw": ""
     },
     {
-      "headline": "XRP down 3.6% in 24h \u2014 risk-off pressure",
-      "sentiment": "BEARISH",
-      "raw": ""
-    },
-    {
-      "headline": "BNB up 3.7% in 24h \u2014 bid momentum",
+      "headline": "BNB up 7.9% in 24h \u2014 bid momentum",
       "sentiment": "BULLISH",
       "raw": ""
     }
