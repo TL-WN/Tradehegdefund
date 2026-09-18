@@ -3,21 +3,21 @@
   "date": "2026-09-18",
   "generated_by": "ci_automated",
   "note": "Automated rule-based call (no LLM). Persona meetings run on the laptop.",
-  "decision": "FLAT",
-  "conviction": 2,
-  "thesis": "Range/neutral regime. No edge, stay flat.",
+  "decision": "LONG",
+  "conviction": 3,
+  "thesis": "Momentum + crowd greed. Trend-follow with a tight stop.",
   "prices": {
-    "BTC": 80813.915,
-    "ETH": 2595.85,
-    "BNB": 758.465,
-    "SOL": 111.625,
-    "XRP": 1.38
+    "BTC": 81127,
+    "ETH": 2623.39,
+    "BNB": 767.17,
+    "SOL": 112.89,
+    "XRP": 1.4
   },
   "fng": "56",
   "speakers": [
     {
       "role": "Automated Engine",
-      "view": "Range/neutral regime. No edge, stay flat."
+      "view": "Momentum + crowd greed. Trend-follow with a tight stop."
     }
   ]
 }
