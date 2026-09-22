@@ -4,20 +4,20 @@
   "generated_by": "ci_automated",
   "note": "Automated rule-based call (no LLM). Persona meetings run on the laptop.",
   "decision": "LONG",
-  "conviction": 3,
-  "thesis": "Momentum + crowd greed. Trend-follow with a tight stop.",
+  "conviction": 2,
+  "thesis": "Greed regime, cautious long into strength.",
   "prices": {
-    "BTC": 85520,
-    "ETH": 2734.8,
-    "BNB": 788.33,
-    "SOL": 116.77,
-    "XRP": 1.51
+    "BTC": 85859,
+    "ETH": 2738.5,
+    "BNB": 785.55,
+    "SOL": 116.6,
+    "XRP": 1.53
   },
   "fng": "78",
   "speakers": [
     {
       "role": "Automated Engine",
-      "view": "Momentum + crowd greed. Trend-follow with a tight stop."
+      "view": "Greed regime, cautious long into strength."
     }
   ]
 }
