@@ -15,11 +15,11 @@
     "target": "64,414 (range high)",
     "opened": "2026-08-12"
   },
-  "month": "2026-09",
+  "month": "2026-10",
   "month_start_equity": 1000251.9699197824,
   "realized_mtd": 0.0,
   "max_leverage_used": 0,
-  "max_drawdown_mtd": 0.3786845485792545,
+  "max_drawdown_mtd": 0.1638531638309161,
   "drawdown_halts": 0,
   "halted": false,
   "halted_at": null,
