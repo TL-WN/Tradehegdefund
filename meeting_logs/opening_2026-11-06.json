@@ -1,0 +1,23 @@
+{
+  "kind": "OPENING",
+  "date": "2026-11-06",
+  "generated_by": "ci_automated",
+  "note": "Automated rule-based call (no LLM). Persona meetings run on the laptop.",
+  "decision": "SHORT",
+  "conviction": 3,
+  "thesis": "Risk-off: BTC down >3% and F&G in fear. Fade rallies.",
+  "prices": {
+    "BTC": 75997,
+    "ETH": 2232.27,
+    "BNB": 692.41,
+    "SOL": 89.84,
+    "XRP": 1.22
+  },
+  "fng": "28",
+  "speakers": [
+    {
+      "role": "Automated Engine",
+      "view": "Risk-off: BTC down >3% and F&G in fear. Fade rallies."
+    }
+  ]
+}
