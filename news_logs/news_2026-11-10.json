@@ -1,0 +1,14 @@
+{
+  "type": "NEWS_BRIEF",
+  "date": "2026-11-10",
+  "source": "offline-data-fallback",
+  "requested_by": "ci_engine",
+  "count": 1,
+  "items": [
+    {
+      "headline": "Fear & Greed at 32 (FEAR) \u2014 crowd sentiment gauge",
+      "sentiment": "BEARISH",
+      "raw": ""
+    }
+  ]
+}
