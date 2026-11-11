@@ -3,16 +3,11 @@
   "date": "2026-11-11",
   "source": "offline-data-fallback",
   "requested_by": "ci_engine",
-  "count": 2,
+  "count": 1,
   "items": [
     {
       "headline": "Fear & Greed at 29 (FEAR) \u2014 crowd sentiment gauge",
       "sentiment": "BEARISH",
-      "raw": ""
-    },
-    {
-      "headline": "SOL up 3.2% in 24h \u2014 bid momentum",
-      "sentiment": "BULLISH",
       "raw": ""
     }
   ]
