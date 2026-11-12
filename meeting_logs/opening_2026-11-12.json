@@ -7,11 +7,11 @@
   "conviction": 3,
   "thesis": "Risk-off: BTC down >3% and F&G in fear. Fade rallies.",
   "prices": {
-    "BTC": 71662,
-    "ETH": 2008.2,
-    "BNB": 656.26,
-    "SOL": 81.42,
-    "XRP": 1.023
+    "BTC": 71791,
+    "ETH": 2008.81,
+    "BNB": 655.0,
+    "SOL": 81.25,
+    "XRP": 1.025
   },
   "fng": "28",
   "speakers": [
