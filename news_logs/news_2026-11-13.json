@@ -3,7 +3,7 @@
   "date": "2026-11-13",
   "source": "offline-data-fallback",
   "requested_by": "ci_engine",
-  "count": 4,
+  "count": 5,
   "items": [
     {
       "headline": "Fear & Greed at 20 (FEAR) \u2014 crowd sentiment gauge",
@@ -11,17 +11,22 @@
       "raw": ""
     },
     {
-      "headline": "BTC down 4.0% in 24h \u2014 risk-off pressure",
+      "headline": "BTC down 4.5% in 24h \u2014 risk-off pressure",
       "sentiment": "BEARISH",
       "raw": ""
     },
     {
-      "headline": "ETH down 3.8% in 24h \u2014 risk-off pressure",
+      "headline": "ETH down 4.5% in 24h \u2014 risk-off pressure",
       "sentiment": "BEARISH",
       "raw": ""
     },
     {
-      "headline": "BNB down 3.1% in 24h \u2014 risk-off pressure",
+      "headline": "BNB down 3.6% in 24h \u2014 risk-off pressure",
+      "sentiment": "BEARISH",
+      "raw": ""
+    },
+    {
+      "headline": "SOL down 3.9% in 24h \u2014 risk-off pressure",
       "sentiment": "BEARISH",
       "raw": ""
     }
