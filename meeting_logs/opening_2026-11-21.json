@@ -3,21 +3,21 @@
   "date": "2026-11-21",
   "generated_by": "ci_automated",
   "note": "Automated rule-based call (no LLM). Persona meetings run on the laptop.",
-  "decision": "SHORT",
+  "decision": "FLAT",
   "conviction": 3,
-  "thesis": "Risk-off: BTC down >3% and F&G in fear. Fade rallies.",
+  "thesis": "Fear regime, no edge. Stay flat, preserve capital.",
   "prices": {
-    "BTC": 57812,
-    "ETH": 1638.09,
-    "BNB": 524.53,
-    "SOL": 68.03,
-    "XRP": 0.894635
+    "BTC": 59867,
+    "ETH": 1682.02,
+    "BNB": 546.05,
+    "SOL": 70.34,
+    "XRP": 0.92245
   },
   "fng": "12",
   "speakers": [
     {
       "role": "Automated Engine",
-      "view": "Risk-off: BTC down >3% and F&G in fear. Fade rallies."
+      "view": "Fear regime, no edge. Stay flat, preserve capital."
     }
   ]
 }
