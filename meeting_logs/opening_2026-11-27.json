@@ -1,0 +1,23 @@
+{
+  "kind": "OPENING",
+  "date": "2026-11-27",
+  "generated_by": "ci_automated",
+  "note": "Automated rule-based call (no LLM). Persona meetings run on the laptop.",
+  "decision": "FLAT",
+  "conviction": 3,
+  "thesis": "Fear regime, no edge. Stay flat, preserve capital.",
+  "prices": {
+    "BTC": 60678,
+    "ETH": 1701.09,
+    "BNB": 555.72,
+    "SOL": 71.26,
+    "XRP": 0.946548
+  },
+  "fng": "12",
+  "speakers": [
+    {
+      "role": "Automated Engine",
+      "view": "Fear regime, no edge. Stay flat, preserve capital."
+    }
+  ]
+}
